@@ -1,238 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>diagprint</title>
-<meta name="description" content="diagprint — a Rust diagnostics lifecycle framework: structured diagnostics, rendering, remediation, CI, editors, and telemetry.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090817">
+<title>diagprint // diagnostics with a memory</title>
+<meta name="description" content="diagprint is a Rust diagnostics lifecycle framework for rendering, remediation, CI, editors, forensics, and telemetry.">
 <link rel="icon" type="image/svg+xml" href="assets/logo-span-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0605;
-  --panel: #110a09;
-  --line-c: #2e1a17;
-  --err: #ff4433;
-  --warn: #ffab40;
-  --note: #5ec2ff;
-  --help: #2fd9c4;
-  --text: #f3ecea;
-  --muted: #ad938e;
-  --dim: #6b5652;
-  --font: 'JetBrains Mono', 'SFMono-Regular', ui-monospace, monospace;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; }
-main { max-width: 860px; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
-
-.hero { text-align: center; margin-bottom: 2.25rem; }
-.hero img { width: 100%; height: auto; display: block; }
-
-/* ---- diagnostic block: styled like a real rustc error/note render ---- */
-.diag-window { background: var(--panel); border: 1px solid var(--line-c); padding: 1.1rem 1.25rem 1.25rem; margin-bottom: 2.25rem; }
-.diag { margin-bottom: 1.5rem; }
-.diag:last-child { margin-bottom: 0; }
-.diag-head { font-weight: 700; font-size: 0.98rem; }
-.diag-head .lvl-err { color: var(--err); }
-.diag-head .lvl-note { color: var(--note); }
-.diag-head .lvl-help { color: var(--help); }
-.diag-head .code { color: var(--muted); font-weight: 400; }
-.diag-head .msg { color: var(--text); font-weight: 700; }
-.diag-loc { color: var(--note); font-size: 0.86rem; margin-top: 0.15rem; }
-.diag-loc .path { color: var(--muted); }
-.gutter { color: var(--note); opacity: 0.75; user-select: none; }
-.diag-src { font-size: 0.86rem; line-height: 1.85; white-space: pre; }
-.diag-src .ln { color: var(--note); opacity: 0.75; display: inline-block; width: 2.4em; text-align: right; margin-right: 0.6em; }
-.diag-src .code-line { color: var(--text); }
-.diag-underline { font-size: 0.86rem; line-height: 1.85; white-space: pre; color: var(--err); }
-.diag-underline .annot { color: var(--muted); font-weight: 400; }
-.diag-note-line { font-size: 0.86rem; line-height: 1.85; color: var(--muted); }
-.diag-note-line .eq { color: var(--note); }
-.diag-note-line .tag { color: var(--note); font-weight: 700; }
-.diag-note-line.help .eq, .diag-note-line.help .tag { color: var(--help); }
-.diag-note-line .body { color: var(--muted); }
-
-.rule { border: none; border-top: 1px solid var(--line-c); margin: 2.5rem 0; }
-
-.section-head {
-  font-size: 0.78rem; letter-spacing: 0.04em; color: var(--dim); text-transform: none;
-  margin: 0 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line-c);
-}
-.section-head .n { color: var(--warn); }
-
-.cap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.9rem; margin-bottom: 2.25rem; }
-.cap-card { background: var(--panel); border: 1px solid var(--line-c); border-left: 3px solid var(--accent, var(--err)); padding: 0.95rem 1.05rem; }
-.cap-card h3 { margin: 0 0 0.55rem; font-size: 0.84rem; color: var(--text); font-weight: 700; }
-.cap-card h3::before { content: "// "; color: var(--dim); font-weight: 400; }
-.cap-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.78rem; color: var(--muted); line-height: 1.75; }
-.cap-card li::marker { color: var(--accent, var(--err)); content: "- "; }
-
-pre.block {
-  background: var(--panel); border: 1px solid var(--line-c); padding: 0.9rem 1rem;
-  font-size: 0.78rem; line-height: 1.7; overflow-x: auto; color: var(--muted); margin: 0 0 2.25rem;
-}
-pre.block .k { color: var(--note); }
-
-.diff { background: var(--panel); border: 1px solid var(--line-c); padding: 0.9rem 1rem; font-size: 0.84rem; line-height: 1.8; margin-bottom: 1.1rem; }
-.diff .gutter2 { color: var(--note); opacity: 0.6; margin-right: 0.6em; }
-.diff .plus { color: var(--help); }
-.diff .plus .gutter2 { color: var(--help); opacity: 0.85; }
-
-.dl-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-bottom: 2.25rem; }
-.dl-btn {
-  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.01em; padding: 0.55rem 1rem;
-  border: 1px solid var(--line-c); color: var(--text); text-decoration: none;
-  background: var(--panel); display: inline-flex; align-items: center; gap: 0.4rem;
-}
-.dl-btn:hover { border-color: var(--err); color: var(--err); }
-.dl-btn.primary { background: var(--err); border-color: var(--err); color: #170504; }
-.dl-btn.primary:hover { background: #ff5c4d; color: #170504; }
-
-footer { text-align: center; padding: 1rem 1.25rem 2rem; color: var(--dim); font-size: 0.76rem; }
-footer a { color: var(--muted); text-decoration: none; }
-footer a:hover { color: var(--err); }
-footer .sep { margin: 0 0.55rem; opacity: 0.6; }
-
-@media (max-width: 480px) {
-  .diag-src, .diag-underline { font-size: 0.74rem; }
-}
+:root{--void:#090817;--ink:#f7f3ff;--muted:#aaa2c3;--dim:#71698a;--panel:rgba(20,14,40,.78);--line:rgba(173,138,255,.2);--red:#ff3b52;--orange:#ff762a;--violet:#a779ff;--cyan:#62e7ff;--green:#58e0b3;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:'DM Sans',ui-sans-serif,system-ui,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--void);font-family:var(--sans);overflow-x:hidden}
+body:before{content:'';position:fixed;z-index:-2;inset:0;background:radial-gradient(circle at 83% 4%,rgba(255,59,82,.16),transparent 30rem),radial-gradient(circle at 16% 38%,rgba(103,75,213,.13),transparent 35rem),linear-gradient(180deg,#090817,#0b0819 56%,#090817)}
+body:after{content:'';position:fixed;z-index:-1;inset:0;opacity:.25;pointer-events:none;background-image:linear-gradient(rgba(167,121,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(167,121,255,.06) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,#000,transparent 80%)}
+a{color:inherit}.skip{position:absolute;left:-9999px;top:1rem}.skip:focus{left:1rem;z-index:10;padding:.65rem .9rem;background:var(--ink);color:var(--void)}.shell{width:min(1160px,calc(100% - 2.5rem));margin:0 auto}.mono{font-family:var(--mono)}
+.topbar{display:flex;align-items:center;justify-content:space-between;min-height:76px;border-bottom:1px solid rgba(173,138,255,.13);font:.75rem var(--mono)}.brand{display:inline-flex;align-items:center;gap:.75rem;text-decoration:none;letter-spacing:.08em}.brand img{width:31px;height:31px;border-radius:8px;box-shadow:0 0 24px rgba(255,59,82,.24)}.brand strong{font-size:.88rem}.brand span{color:var(--dim)}.nav{display:flex;align-items:center;gap:1.2rem;color:var(--muted)}.nav a{text-decoration:none;transition:color .2s}.nav a:hover,.nav a:focus-visible{color:var(--ink)}.nav-cta{color:var(--ink);border:1px solid var(--line);padding:.52rem .72rem;background:rgba(20,14,40,.5)}.nav-cta:hover,.nav-cta:focus-visible{border-color:var(--red);color:var(--red)}
+.hero{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr);gap:clamp(2rem,7vw,6.4rem);align-items:center;padding:clamp(4.5rem,10vw,8.5rem) 0 5.8rem}.eyebrow{color:var(--orange);font:600 .72rem/1.4 var(--mono);letter-spacing:.11em;text-transform:uppercase}.eyebrow:before{content:'◈ ';color:var(--red)}h1,h2,h3,p{margin-top:0}h1{margin:.9rem 0 1.2rem;max-width:720px;font-size:clamp(3.2rem,7.2vw,6.65rem);line-height:.94;letter-spacing:-.07em;font-weight:700}h1 em{color:var(--red);font-style:normal;text-shadow:0 0 34px rgba(255,59,82,.32)}.hero-copy>p{max-width:580px;color:var(--muted);font-size:clamp(1.05rem,1.8vw,1.24rem);line-height:1.65}.hero-copy>p strong{color:var(--ink)}.actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:2rem 0 1.35rem}.button{display:inline-flex;align-items:center;justify-content:center;min-height:45px;gap:.55rem;padding:.75rem 1rem;border:1px solid var(--line);background:rgba(20,14,40,.66);color:var(--ink);font:600 .77rem var(--mono);text-decoration:none;transition:transform .2s,border-color .2s,background .2s}.button:hover,.button:focus-visible{transform:translateY(-2px);border-color:var(--violet);background:rgba(45,29,75,.9)}.button.primary{border-color:var(--red);background:linear-gradient(100deg,var(--red),var(--orange));color:#1c0711;box-shadow:0 0 30px rgba(255,59,82,.22)}.button.primary:hover,.button.primary:focus-visible{border-color:#ffb06a;background:linear-gradient(100deg,#ff5b68,#ff9147)}.install-line{color:var(--dim);font:.72rem var(--mono)}.install-line + .install-line{margin-top:.38rem}.install-line code{color:var(--cyan)}
+.terminal{position:relative;border:1px solid var(--line);background:linear-gradient(145deg,rgba(28,19,53,.95),rgba(12,9,25,.94));box-shadow:0 26px 90px rgba(0,0,0,.32),0 0 80px rgba(106,61,184,.13)}.terminal:before{content:'';position:absolute;inset:14px -14px -14px 14px;z-index:-1;border:1px solid rgba(255,59,82,.16)}.terminal-bar{display:flex;align-items:center;gap:.4rem;padding:.78rem 1rem;border-bottom:1px solid var(--line);color:var(--dim);font:.67rem var(--mono)}.dot{width:7px;height:7px;border-radius:50%;background:var(--dim)}.dot:first-child{background:var(--red);box-shadow:0 0 10px var(--red)}.dot:nth-child(2){background:var(--orange)}.dot:nth-child(3){background:var(--green)}.terminal-title{margin-left:auto}.terminal-body{padding:1.45rem 1.25rem 1.6rem;font:.73rem/1.75 var(--mono)}.prompt,.green{color:var(--green)}.muted{color:var(--dim)}.err{color:var(--red)}.warn{color:var(--orange)}.cyan{color:var(--cyan)}.white{color:var(--ink)}.indent{padding-left:1rem}.cursor{display:inline-block;width:.55em;height:1.1em;margin-left:.25rem;vertical-align:-.15em;background:var(--red);animation:blink 1.1s steps(2,start) infinite}@keyframes blink{50%{opacity:0}}
+.signal-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.signal{padding:1.1rem 1.2rem;border-right:1px solid var(--line)}.signal:last-child{border-right:0}.signal b{display:block;margin-bottom:.3rem;color:var(--ink);font:700 .76rem var(--mono)}.signal span{color:var(--dim);font-size:.78rem}
+.section{padding:7rem 0 1rem}.section-kicker{color:var(--violet);font:600 .71rem var(--mono);letter-spacing:.1em;text-transform:uppercase}h2{max-width:710px;margin:.8rem 0 1rem;font-size:clamp(2.2rem,4.5vw,4.2rem);line-height:1;letter-spacing:-.055em}.section-intro{max-width:620px;color:var(--muted);font-size:1.05rem;line-height:1.7}
+.surface-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}.surface{min-height:240px;padding:1.45rem;border:1px solid var(--line);background:linear-gradient(155deg,rgba(24,17,47,.9),rgba(14,10,29,.78));position:relative;overflow:hidden}.surface:after{content:'';position:absolute;right:-40px;bottom:-50px;width:150px;height:150px;border:1px solid rgba(255,59,82,.24);transform:rotate(45deg)}.surface:hover{border-color:rgba(255,89,102,.55)}.surface-num{color:var(--red);font:.69rem var(--mono)}.surface h3{margin:2.2rem 0 .6rem;font-size:1.12rem}.surface p{margin-bottom:1.3rem;color:var(--muted);line-height:1.55;font-size:.92rem}.surface code{color:var(--cyan);font:.71rem var(--mono)}
+.forensics{display:grid;grid-template-columns:.76fr 1.24fr;gap:1rem;align-items:stretch;margin-top:2.5rem}.forensics-copy,.casefile{border:1px solid var(--line);background:var(--panel)}.forensics-copy{padding:2rem}.forensics-copy h3{margin:0 0 .8rem;font-size:1.5rem}.forensics-copy p{color:var(--muted);line-height:1.65}.tag{display:inline-block;margin-top:1rem;color:var(--green);font:.7rem var(--mono)}.casefile{padding:1.35rem;overflow-x:auto}.casefile pre{margin:0;color:var(--muted);font:.73rem/1.8 var(--mono)}
+.install{display:grid;grid-template-columns:1fr .9fr;gap:1rem;align-items:stretch;margin-top:2.5rem}.install-copy,.code-card{border:1px solid var(--line);background:var(--panel);padding:1.6rem}.install-copy p{color:var(--muted);line-height:1.6}.code-card{display:flex;flex-direction:column;justify-content:center}.code-card .label{margin-bottom:.8rem;color:var(--dim);font:.69rem var(--mono)}.code-card pre{margin:0;color:var(--cyan);font:.86rem/1.9 var(--mono);overflow-x:auto}.comment{color:var(--dim)}
+.footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:7rem;padding:1.5rem 0 2.5rem;border-top:1px solid var(--line);color:var(--dim);font:.7rem var(--mono)}.footer a{color:var(--muted);text-decoration:none}.footer a:hover,.footer a:focus-visible{color:var(--red)}.footer-links{display:flex;flex-wrap:wrap;gap:1rem}
+@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:4rem}.terminal{max-width:620px}.surface-grid,.forensics,.install{grid-template-columns:1fr}}@media(max-width:560px){.shell{width:min(100% - 1.5rem,1160px)}.topbar{min-height:64px}.nav a:not(.nav-cta){display:none}h1{font-size:clamp(3.1rem,16vw,5rem)}.hero{padding:3.7rem 0 4.2rem}.signal-strip{grid-template-columns:repeat(2,1fr)}.signal:nth-child(2){border-right:0}.signal:nth-child(-n+2){border-bottom:1px solid var(--line)}.section{padding-top:5rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<main>
-  <section class="hero">
-    <img src="assets/header-stacked.svg" alt="diagprint — A Rust diagnostics lifecycle framework">
-  </section>
-
-  <div class="diag-window">
-    <div class="diag">
-      <div class="diag-head"><span class="lvl-err">error</span><span class="code">[framework]</span><span class="msg">: diagprint is a Rust diagnostics lifecycle framework</span></div>
-      <div class="diag-loc"><span class="gutter">  --&gt;</span> <span class="path">README.md:9:1</span></div>
-      <div class="diag-src"><span class="gutter">   |</span>
-<span class="ln">9</span><span class="gutter">|</span> <span class="code-line">Define diagnostics once, carry them through terminal output,</span>
-<span class="ln"> </span><span class="gutter">|</span> <span class="code-line">compiler tooling, editors, CI, code scanning, guarded</span>
-<span class="ln"> </span><span class="gutter">|</span> <span class="code-line">remediation, verification, telemetry, privacy-aware export.</span></div>
-      <div class="diag-underline">   <span style="color:var(--note)">|</span> <span style="color:var(--err)">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span> <span class="annot">the whole diagnostic lifecycle, not just error formatting</span></div>
-      <div class="diag-note-line help">   <span class="eq">=</span> <span class="tag">help</span>: <span class="body">crates.io v<span id="badge-version">0.8.0</span> &middot; MIT OR Apache-2.0 &middot; <a href="https://docs.rs/diagprint" style="color:inherit" target="_blank" rel="noopener">docs.rs</a></span></div>
-    </div>
-
-    <div class="diag">
-      <div class="diag-head"><span class="lvl-note">note</span><span class="code">[core-rule]</span></div>
-      <div class="diag-note-line" style="margin-top:0.4rem;">   <span class="body">Diagnostics may explain and propose. Mutation must be explicit,
-   structured, validated, and reject uncertainty.</span></div>
-    </div>
-  </div>
-
-  <hr class="rule">
-
-  <p class="section-head">capabilities <span class="n">// 4 categories, 16 checks</span></p>
-  <div class="cap-grid">
-    <div class="cap-card" style="--accent: var(--err)">
-      <h3>rendering</h3>
-      <ul>
-        <li>Rich terminal rendering</li>
-        <li>Primary and secondary source labels</li>
-        <li>Virtual and in-memory sources</li>
-        <li>Immutable snapshots, per-source revisions</li>
-      </ul>
-    </div>
-    <div class="cap-card" style="--accent: var(--warn)">
-      <h3>output formats</h3>
-      <ul>
-        <li>JSON, Markdown, plain-text</li>
-        <li>GitHub Actions annotations</li>
-        <li>SARIF, for code-scanning tools</li>
-        <li>rustc and Cargo diagnostic ingestion</li>
-      </ul>
-    </div>
-    <div class="cap-card" style="--accent: var(--help)">
-      <h3>remediation</h3>
-      <ul>
-        <li>Guarded remediation</li>
-        <li>Transactional multi-file fixes</li>
-        <li>Post-fix verification</li>
-        <li>Exact-byte artifact receipts</li>
-      </ul>
-    </div>
-    <div class="cap-card" style="--accent: var(--note)">
-      <h3>ci &amp; forensics</h3>
-      <ul>
-        <li>Canonical fingerprints, report digests</li>
-        <li>Semantic deltas, baseline-aware CI</li>
-        <li>Hash-chained history and lineage</li>
-        <li>Case files via <code>diagprint why</code></li>
-      </ul>
-    </div>
-  </div>
-
-  <p class="section-head">forensics <span class="n">// diagprint why .diagprint/history 7f23a9d5c120</span></p>
-  <pre class="block">DIAGNOSTIC CASE FILE
-schema: diagprint.forensics.case-file/v1
-fingerprint: <span class="k">diagprint.canonical/v1:sha256:...</span>
-status: active   chain-verified: true
-first-seen: run=000002 label="baseline"
-last-seen:  run=000011 label="regressed"
+<a class="skip" href="#main">Skip to content</a>
+<header class="shell topbar"><a class="brand" href="./" aria-label="diagprint home"><img src="assets/logo-span-mark.svg" alt=""><strong>diagprint</strong><span>// cybercore diagnostics</span></a><nav class="nav" aria-label="Primary navigation"><a href="#surfaces">surfaces</a><a href="#forensics">forensics</a><a class="nav-cta" href="https://github.com/darkstardevx/diagprint" target="_blank" rel="noopener">source ↗</a></nav></header>
+<main id="main" class="shell">
+<section class="hero"><div class="hero-copy"><div class="eyebrow">diagnostic telemetry // uplink ready</div><h1>Make every failure <em>legible.</em></h1><p><strong>diagprint</strong> is the Rust diagnostics lifecycle framework for teams that need more than a red line in a terminal. Render once. Explain clearly. Track what changed.</p><div class="actions"><a class="button primary" href="https://docs.rs/diagprint" target="_blank" rel="noopener">Read the docs <span>↗</span></a><a class="button" href="https://github.com/darkstardevx/diagprint/releases" target="_blank" rel="noopener">View releases <span>↗</span></a></div><div class="install-line"><span class="mono">$</span> cargo add diagprint <code id="version-inline">// v0.8.0</code></div><div class="install-line"><span class="mono">$</span> curl -fsSL <code>https://raw.githubusercontent.com/darkstardevx/diagprint/main/install.sh</code> | sh</div></div>
+<div class="terminal" aria-label="Example diagprint diagnostic output"><div class="terminal-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="terminal-title">diagprint // live case</span></div><div class="terminal-body"><div><span class="prompt">$</span> diagprint scan . --history .diagprint/history</div><div class="muted">&nbsp;</div><div><span class="err">error</span> <span class="white">[ERROR-001]: uplink rejected</span></div><div class="muted">  --&gt; src/gateway.rs:42:17</div><div class="indent"><span class="cyan">42</span> | <span class="white">connect(node, signature)</span></div><div class="indent"><span class="cyan">&nbsp;&nbsp;</span> | <span class="err">^^^^^^^^^^^^^^^^^</span></div><div class="indent"><span class="warn">= cause:</span> authentication signature mismatch</div><div class="indent"><span class="cyan">= note:</span> case fingerprint retained</div><div class="indent"><span class="green">= help:</span> verify node identity and reconnect</div><div class="muted">&nbsp;</div><div><span class="green">✓</span> report persisted // chain verified</div><div><span class="prompt">$</span><span class="cursor" aria-hidden="true"></span></div></div></div></section>
+<section class="signal-strip" aria-label="diagprint principles"><div class="signal"><b>01 // structured</b><span>One diagnostic, many renderers.</span></div><div class="signal"><b>02 // explainable</b><span>Causes, context, and actionable help.</span></div><div class="signal"><b>03 // guarded</b><span>Remediation stays explicit and verified.</span></div><div class="signal"><b>04 // remembered</b><span>History turns incidents into evidence.</span></div></section>
+<section id="surfaces" class="section"><div class="section-kicker">// one signal, every surface</div><h2>Diagnostics that travel with the problem.</h2><p class="section-intro">Build the report once, then carry its meaning from a local terminal to CI, editor integrations, code scanning, and long-lived forensic history.</p><div class="surface-grid"><article class="surface"><div class="surface-num">[01] PRESENT</div><h3>Render for humans</h3><p>Rich terminal output, source spans, labels, notes, causes, and help that make the next action obvious.</p><code>terminal · markdown · html</code></article><article class="surface"><div class="surface-num">[02] CONNECT</div><h3>Export for systems</h3><p>Stable structured output for CI, GitHub Actions, SARIF, compilers, editors, telemetry, and custom bridges.</p><code>json · sarif · adapters</code></article><article class="surface"><div class="surface-num">[03] REMEMBER</div><h3>Investigate the trail</h3><p>Canonical fingerprints, history chains, semantic deltas, and case files that show when a failure appeared and why.</p><code>history · why · blame</code></article></div></section>
+<section id="forensics" class="section"><div class="section-kicker">// memory layer</div><h2>From noisy failure to a verified case file.</h2><div class="forensics"><div class="forensics-copy"><h3>Keep the signal.</h3><p>diagprint gives recurring diagnostics an identity. Compare runs, preserve privacy-aware evidence, and distinguish a new failure from the same failure wearing a new timestamp.</p><span class="tag">schema: diagprint.forensics.case-file/v1</span></div><div class="casefile"><pre><span class="cyan">DIAGNOSTIC CASE FILE</span>
+fingerprint: <span class="cyan">sha256:7f23a9d5c120...</span>
+status: <span class="err">active</span>   chain-verified: <span class="green">true</span>
+first-seen: run=000002  label="baseline"
+last-seen:  run=000011  label="regressed"
 history-runs: 12   observed-runs: 7   episodes: 2
 
 EPISODES
-  #01 start=000002 last-active=000006 resolved=000007 runs=5
-  #02 start=000010 last-active=000011 resolved=active  runs=2</pre>
-
-  <p class="section-head">install <span class="n">// Cargo.toml</span></p>
-  <div class="diff"><span class="plus"><span class="gutter2">+</span>diagprint = "<span id="diff-version">0.8.0</span>"</span></div>
-  <div class="dl-row">
-    <a class="dl-btn primary" href="https://crates.io/crates/diagprint" target="_blank" rel="noopener">crates.io</a>
-    <a class="dl-btn" href="https://docs.rs/diagprint" target="_blank" rel="noopener">documentation</a>
-    <a class="dl-btn" href="https://github.com/darkstardevx/diagprint/releases" target="_blank" rel="noopener">releases</a>
-    <a class="dl-btn" href="https://github.com/darkstardevx/diagprint" target="_blank" rel="noopener">source</a>
-  </div>
-
-  <p class="section-head">repo <span class="n" id="stat-line">syncing&hellip;</span></p>
-
-  <footer>
-    <a href="https://github.com/darkstardevx/diagprint" target="_blank" rel="noopener">GitHub ↗</a>
-    <span class="sep">·</span>
-    <a href="https://darkstardevx.github.io" target="_blank" rel="noopener">Cybercore ecosystem ↗</a>
-  </footer>
+  #01 start=000002 last-active=000006 resolved=000007
+  #02 start=000010 last-active=000011 resolved=<span class="err">active</span></pre></div></div></section>
+<section class="section"><div class="section-kicker">// boot sequence</div><h2>Drop it into the stack.</h2><div class="install"><div class="install-copy"><p>Start with the core crate, add the integrations you need, and keep mutation behind explicit guarded APIs. diagprint is open source, Rust-native, and designed to stay useful as your system grows.</p><a class="button" href="https://github.com/darkstardevx/diagprint#readme" target="_blank" rel="noopener">Read the README ↗</a></div><div class="code-card"><div class="label">// Cargo.toml</div><pre><span class="comment">[dependencies]</span>
+diagprint = "0.8"
+<span class="comment"># optional: features = ["derive", "cybercore"]</span></pre></div></div></section>
 </main>
-
+<footer class="shell footer"><span>diagprint <span id="footer-version">v0.8.0</span> // MIT OR Apache-2.0</span><div class="footer-links"><a href="https://crates.io/crates/diagprint" target="_blank" rel="noopener">crates.io ↗</a><a href="https://docs.rs/diagprint" target="_blank" rel="noopener">docs.rs ↗</a><a href="https://github.com/darkstardevx/diagprint" target="_blank" rel="noopener">GitHub ↗</a><a href="https://darkstardevx.github.io" target="_blank" rel="noopener">Cybercore ecosystem ↗</a></div></footer>
 <script>
-(function () {
-  function relTime(iso) {
-    var s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
-    if (s < 60) return "just now";
-    var m = Math.floor(s / 60); if (m < 60) return m + "m ago";
-    var h = Math.floor(m / 60); if (h < 24) return h + "h ago";
-    var d = Math.floor(h / 24); if (d < 30) return d + "d ago";
-    var mo = Math.floor(d / 30); if (mo < 12) return mo + "mo ago";
-    return Math.floor(mo / 12) + "y ago";
-  }
-  var line = document.getElementById("stat-line");
-
-  Promise.all([
-    fetch("https://api.github.com/repos/darkstardevx/diagprint", { headers: { Accept: "application/vnd.github+json" } }).then(function (r) { return r.ok ? r.json() : null; }),
-    fetch("https://api.github.com/repos/darkstardevx/diagprint/releases/latest", { headers: { Accept: "application/vnd.github+json" } }).then(function (r) { return r.ok ? r.json() : null; })
-  ]).then(function (res) {
-    var repo = res[0], rel = res[1];
-    var parts = [];
-    if (repo) {
-      parts.push(repo.stargazers_count + " star" + (repo.stargazers_count === 1 ? "" : "s"));
-      parts.push(repo.open_issues_count + " open issue" + (repo.open_issues_count === 1 ? "" : "s"));
-      parts.push("pushed " + relTime(repo.pushed_at));
-    }
-    if (rel) {
-      document.getElementById("badge-version").textContent = rel.tag_name.replace(/^v/, "");
-      document.getElementById("diff-version").textContent = rel.tag_name.replace(/^v/, "");
-      parts.unshift("latest " + rel.tag_name);
-    }
-    line.textContent = parts.length ? "// " + parts.join(" · ") : "// could not reach api.github.com";
-  }).catch(function () {
-    line.textContent = "// could not reach api.github.com";
-  });
-})();
+(function(){var nodes=[document.getElementById('version-inline'),document.getElementById('footer-version')];fetch('https://api.github.com/repos/darkstardevx/diagprint/releases/latest',{headers:{Accept:'application/vnd.github+json'}}).then(function(r){return r.ok?r.json():null}).then(function(release){if(!release||!release.tag_name)return;var version=release.tag_name.replace(/^v/,'');nodes.forEach(function(node,index){if(node)node.textContent=index===0?'// v'+version:'v'+version})}).catch(function(){/* static fallback remains useful offline */})}());
 </script>
 </body>
 </html>
