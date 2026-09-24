@@ -1,7 +1,7 @@
 # diagprint
 
-[![CI](https://github.com/darkstardevx/diagprint/actions/workflows/ci.yml/badge.svg)](https://github.com/darkstardevx/diagprint/actions/workflows/ci.yml)
-[![Release](https://github.com/darkstardevx/diagprint/actions/workflows/release.yml/badge.svg)](https://github.com/darkstardevx/diagprint/actions/workflows/release.yml)
+[![CI](https://github.com/cybercore-tech/diagprint/actions/workflows/ci.yml/badge.svg)](https://github.com/cybercore-tech/diagprint/actions/workflows/ci.yml)
+[![Release](https://github.com/cybercore-tech/diagprint/actions/workflows/release.yml/badge.svg)](https://github.com/cybercore-tech/diagprint/actions/workflows/release.yml)
 [![Crates.io](https://img.shields.io/crates/v/diagprint.svg)](https://crates.io/crates/diagprint)
 [![Docs.rs](https://docs.rs/diagprint/badge.svg)](https://docs.rs/diagprint)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
@@ -1332,7 +1332,7 @@ Potential future work includes:
 
 ## Repository
 
-https://github.com/darkstardevx/diagprint
+https://github.com/cybercore-tech/diagprint
 
 ## License
 
