@@ -306,7 +306,7 @@ diagprint = "0.8"
 ### CLI
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/darkstardevx/diagprint/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/cybercore-tech/diagprint/main/install.sh | sh
 ```
 
 Downloads the latest release for your platform (Linux or macOS,
