@@ -1,45 +1,86 @@
-# diagprint
+# 🩺 diagprint
 
 [![CI](https://github.com/cybercore-tech/diagprint/actions/workflows/ci.yml/badge.svg)](https://github.com/cybercore-tech/diagprint/actions/workflows/ci.yml)
 [![Release](https://github.com/cybercore-tech/diagprint/actions/workflows/release.yml/badge.svg)](https://github.com/cybercore-tech/diagprint/actions/workflows/release.yml)
 [![Crates.io](https://img.shields.io/crates/v/diagprint.svg)](https://crates.io/crates/diagprint)
 [![Docs.rs](https://docs.rs/diagprint/badge.svg)](https://docs.rs/diagprint)
-[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
+[![MSRV](https://img.shields.io/badge/MSRV-1.85-orange.svg)](#-minimum-supported-rust-version)
+[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#-license)
 
 **diagprint is a Rust diagnostics lifecycle framework.**
 
 Define diagnostics once, then carry them safely through terminal output, compiler tooling, editors, CI, code scanning, guarded remediation, verification, telemetry, and privacy-aware external reporting.
 
-`diagprint` turns failures into actionable, structured diagnostics with:
+🌐 [Project site & live demo](https://cybercore-tech.github.io/diagprint/) ·
+📖 [API docs](https://docs.rs/diagprint) ·
+📦 [crates.io](https://crates.io/crates/diagprint) ·
+📝 [Changelog](CHANGELOG.md) ·
+💬 [Discord](https://discord.gg/vBMcK5wAx)
 
-- rich terminal rendering;
-- primary and secondary source labels;
+`diagprint` turns failures into actionable, structured diagnostics:
+
+🖥️ **Rendering**
+
+- rich terminal rendering with primary and secondary source labels;
+- JSON, Markdown, plain-text, compiler-style, HTML, GitHub Actions, and SARIF output;
+- version-aware documentation.
+
+🧾 **Sources**
+
 - virtual and in-memory sources;
 - immutable source snapshots;
 - per-source revision tracking;
 - stale-source detection;
-- captured revision-aware diagnostics;
-- JSON, Markdown, plain-text, GitHub Actions, and SARIF output;
-- ecosystem interoperability;
-- rustc and Cargo diagnostic ingestion;
+- captured revision-aware diagnostics.
+
+🔧 **Remediation**
+
 - guarded remediation;
 - transactional multi-file fixes;
-- post-fix verification;
+- post-fix verification.
+
+🚦 **CI and reporting**
+
 - canonical diagnostic fingerprints and report digests;
 - semantic report deltas and baseline-aware CI evaluation;
 - exact-byte artifact receipts and transactional artifact persistence;
 - diagnostic capsules and privacy-aware export;
-- project scanning with static, standard, and deep profiles;
+- project scanning with static, standard, and deep profiles.
+
+🔬 **Forensics**
+
 - hash-chained diagnostic history and lineage;
-- diagnostic forensic case files and `diagprint why` analysis;
-- version-aware documentation.
+- diagnostic forensic case files and `diagprint why` analysis.
+
+🌉 **Interop**
+
+- ecosystem interoperability;
+- rustc and Cargo diagnostic ingestion.
 
 The core rule is:
 
 > Diagnostics may explain and propose. Mutation must be explicit, structured,
 > validated, and reject uncertainty.
 
-## Diagnostic Forensics
+<details>
+<summary>📚 <b>Contents</b></summary>
+
+- 🔬 [Diagnostic Forensics](#-diagnostic-forensics)
+- 🌉 [Ecosystem Bridge SDK](#-ecosystem-bridge-sdk)
+- 🔁 [Remediation evidence replay](#-remediation-evidence-replay)
+- 📥 [Installation](#-installation) · 📦 [Workspace crates](#-workspace-crates) · 🎛️ [Optional Features](#️-optional-features)
+- 🚀 [Quick Start](#-quick-start)
+- 🧾 Sources: [Source Diagnostics](#-source-diagnostics) · [Virtual Sources](#-virtual-and-in-memory-sources) · [Snapshots](#-immutable-source-snapshots) · [Revisions](#-source-revisions) · [Revision-Bound](#-revision-bound-diagnostics) · [Captured](#-captured-diagnostics) · [Providers](#-source-providers)
+- 🚦 CI: [GitHub Actions](#-github-actions-annotations) · [SARIF](#️-sarif-210) · [Output formats](#️-built-in-output-formats)
+- 🌉 Interop: [Generic](#-generic-diagnostic-interop) · [anyhow](#-anyhow) · [tracing](#-tracing) · [miette](#-miette) · [codespan](#-codespan-reporting) · [Ariadne](#-ariadne) · [annotate-snippets](#-annotate-snippets) · [rustc](#-rustc-diagnostics) · [Cargo](#-cargo-intelligence)
+- 🔧 Fixes: [Suggestions](#-diagnostic-suggestions) · [Fixer](#-fixer) · [FixPlan](#-fixplan) · [Verification](#-post-fix-verification) · [Commands](#-suggested-commands)
+- 📚 [Documentation Intelligence](#-documentation-intelligence) · [Terminal Docs](#-terminal-documentation) · 🎨 [Themes](#-themes) · [Cybercore](#-cybercore-integration)
+- 🗂️ [Rotation](#️-rotation) · [Compression](#️-compression) · 🛡️ [Safety Model](#️-safety-model) · 🦀 [MSRV](#-minimum-supported-rust-version)
+- 🛠️ [Development](#️-development) · 🧪 [Examples](#-examples) · 🆕 [What's new](#-whats-new-in-08) · 🗺️ [Roadmap](#️-roadmap) · 💬 [Community](#-community) · 📄 [License](#-license)
+
+</details>
+
+## 🔬 Diagnostic Forensics
 
 Most error libraries answer:
 
@@ -98,7 +139,7 @@ This is the foundation for the larger Diagnostic Forensics roadmap:
 why ✓ → timeline ✓ → blame ✓ → causal graph ✓ → replay ✓
 ```
 
-### Visual Timeline
+### 📈 Visual Timeline
 
 The same evidence can be viewed run by run:
 
@@ -131,7 +172,7 @@ The visual glyph is only a compact presentation. The underlying timeline keeps
 the complete transition counts, severity distribution, canonical content
 digests, episode identity, and run labels.
 
-### Git Provenance and `blame`
+### 🧬 Git Provenance and `blame`
 
 A forensic timeline becomes much more useful when a history run can be tied to
 the exact repository state that surrounded it.
@@ -205,7 +246,7 @@ For repositories that keep history under `.diagprint/`, add `.diagprint/` to
 scans.
 
 
-### Diagnostic relationship graph
+### 🕸️ Diagnostic relationship graph
 
 M4 adds a typed relationship graph between canonical diagnostic identities.
 
@@ -240,7 +281,7 @@ track, allowing third-party error/diagnostic crates to preserve structured
 relationships instead of flattening them into rendered strings.
 
 
-## Ecosystem Bridge SDK
+## 🌉 Ecosystem Bridge SDK
 
 The Ecosystem Bridges track now has a reusable construction SDK:
 
@@ -274,7 +315,7 @@ diagprint-error-stack = "0.8"
 ```
 
 
-## Remediation evidence replay
+## 🔁 Remediation evidence replay
 
 diagprint can bind a successful guarded remediation receipt to an exact
 adjacent transition in tamper-evident diagnostic history, then replay that
@@ -294,7 +335,7 @@ recurrence root cause, and Git causation remain explicitly **not established**.
 Replay is read-only: it never invokes `FixPlan::apply` or executes shell
 commands.
 
-## Installation
+## 📥 Installation
 
 ```toml
 [dependencies]
@@ -303,7 +344,7 @@ diagprint = "0.8"
 
 `diagprint` v0.8 uses Rust 2024 and supports Rust **1.85 and newer**.
 
-### CLI
+### ⌨️ CLI
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cybercore-tech/diagprint/main/install.sh | sh
@@ -317,29 +358,41 @@ x86_64 or aarch64), verifies its SHA-256 checksum, and installs
 cargo install diagprint
 ```
 
-## Optional Features
+## 📦 Workspace crates
+
+| Crate | What it does |
+| --- | --- |
+| [`diagprint`](https://crates.io/crates/diagprint) | 🩺 the lifecycle framework and the `diagprint` CLI |
+| [`diagprint-derive`](https://crates.io/crates/diagprint-derive) | ✨ derive macros for typed diagnostics |
+| [`diagprint-lsp`](https://crates.io/crates/diagprint-lsp) | 🧑‍💻 Language Server Protocol diagnostics and code actions |
+| [`diagprint-otel`](https://crates.io/crates/diagprint-otel) | 📡 privacy-aware OpenTelemetry integration |
+| [`diagprint-async`](https://crates.io/crates/diagprint-async) | ⏱️ bounded asynchronous diagnostic delivery |
+| [`diagprint-axum`](https://crates.io/crates/diagprint-axum) | 🌐 privacy-safe Axum HTTP responses |
+| [`diagprint-bridge`](https://crates.io/crates/diagprint-bridge) | 🌉 SDK for building structured ecosystem adapters |
+| [`diagprint-error-stack`](https://crates.io/crates/diagprint-error-stack) | 🧱 error-stack interoperability |
+| [`diagprint-test`](https://crates.io/crates/diagprint-test) | 🧪 test assertions and snapshot helpers |
+
+## 🎛️ Optional Features
 
 All optional features are disabled by default.
 
 ```toml
-[dependencies]
-diagprint = {
-    version = "0.8",
-    features = [
-        "artifact-store",
-        "derive",
-        "compression",
-        "html",
-        "cybercore",
-        "terminal-docs",
-        "anyhow",
-        "tracing",
-        "miette",
-        "codespan-reporting",
-        "ariadne",
-        "annotate-snippets",
-    ]
-}
+[dependencies.diagprint]
+version = "0.8"
+features = [
+    "artifact-store",
+    "derive",
+    "compression",
+    "html",
+    "cybercore",
+    "terminal-docs",
+    "anyhow",
+    "tracing",
+    "miette",
+    "codespan-reporting",
+    "ariadne",
+    "annotate-snippets",
+]
 ```
 
 | Feature | Purpose |
@@ -357,7 +410,7 @@ diagprint = {
 | `ariadne` | Ariadne structured bridge |
 | `annotate-snippets` | annotate-snippets structured bridge |
 
-## Quick Start
+## 🚀 Quick Start
 
 ```rust
 use diagprint::{Reporter, Severity};
@@ -381,7 +434,7 @@ fn main() -> std::io::Result<()> {
 }
 ```
 
-## Source Diagnostics
+## 🎯 Source Diagnostics
 
 Diagnostics can point directly at source locations.
 
@@ -411,7 +464,7 @@ interop.
 The terminal renderer displays them differently so related context does not
 look like an additional primary failure.
 
-## Virtual and In-Memory Sources
+## 💾 Virtual and In-Memory Sources
 
 Source text does not need to exist on disk.
 
@@ -457,7 +510,7 @@ over filesystem fallback.
 
 Cloned `SourceCache` handles share the same underlying source state.
 
-## Immutable Source Snapshots
+## 📸 Immutable Source Snapshots
 
 Mutable editor buffers can change after a diagnostic is created.
 
@@ -483,7 +536,7 @@ let diagnostic = reporter
 
 Later mutations to the live cache do not change the snapshot.
 
-## Source Revisions
+## 🔢 Source Revisions
 
 Every cached source tracks a `SourceRevision`.
 
@@ -504,7 +557,7 @@ text.
 Revision history survives removal and clearing so an old revision cannot be
 silently reused after a source is recreated.
 
-## Revision-Bound Diagnostics
+## 🔗 Revision-Bound Diagnostics
 
 A diagnostic can bind its source locations to the source revision it was
 created from.
@@ -537,7 +590,7 @@ No misleading newer source excerpt is shown.
 
 Revision-unbound diagnostics retain the existing source behavior.
 
-## Captured Diagnostics
+## 📦 Captured Diagnostics
 
 `CapturedDiagnostic` pairs a diagnostic with the immutable source snapshot that
 belongs to it.
@@ -579,7 +632,7 @@ reporter.emit_captured(&captured)?;
 
 Source text stays outside `Diagnostic` serialization.
 
-## Source Providers
+## 🔌 Source Providers
 
 Integrations which own in-memory source text can expose it through
 `SourceProvider`.
@@ -600,7 +653,7 @@ let reporter = Reporter::builder()
 
 The Ariadne and annotate-snippets bridges implement this handoff.
 
-## GitHub Actions Annotations
+## 🚦 GitHub Actions Annotations
 
 `diagprint` can emit native GitHub Actions workflow-command annotations.
 
@@ -644,7 +697,7 @@ visible without appearing as additional failures.
 
 Workflow command data and properties are escaped before output.
 
-## SARIF 2.1.0
+## 🛡️ SARIF 2.1.0
 
 `SarifRenderer` produces SARIF for GitHub Code Scanning and other SARIF 2.1.0
 consumers.
@@ -706,19 +759,25 @@ No synthetic fingerprints are invented.
 `write_many()` writes one complete SARIF document rather than appending
 independent JSON documents.
 
-## Built-In Output Formats
+## 🖨️ Built-In Output Formats
 
 The same diagnostic data can be rendered as:
 
 - terminal output;
 - plain text;
+- compiler-style text;
 - JSON;
 - Markdown;
-- GitHub Actions annotations;
+- HTML (`html` feature);
+- audit transcripts;
+- GitHub Actions annotations, including delta annotations;
 - SARIF 2.1.0.
 
 ```rust
 use diagprint::render::{
+    AuditTranscriptRenderer,
+    CompilerTextRenderer,
+    GithubActionsDeltaRenderer,
     GithubActionsRenderer,
     JsonRenderer,
     MarkdownRenderer,
@@ -731,7 +790,7 @@ use diagprint::render::{
 
 Diagnostic construction stays independent from presentation.
 
-## Generic Diagnostic Interop
+## 🔄 Generic Diagnostic Interop
 
 `diagprint` provides a dependency-free interoperability protocol for structured
 diagnostics.
@@ -754,7 +813,7 @@ Generic interoperability deliberately does **not** grant remediation trust.
 An integration that wants automatic edits must establish remediation trust
 separately.
 
-## anyhow
+## 🧩 anyhow
 
 Enable:
 
@@ -765,7 +824,7 @@ features = ["anyhow"]
 The anyhow adapter can convert error context into structured diagprint
 diagnostics while preserving the error chain.
 
-## tracing
+## 📡 tracing
 
 Enable:
 
@@ -776,7 +835,7 @@ features = ["tracing"]
 The tracing integration connects structured tracing events with diagprint
 reporting.
 
-## miette
+## 🧩 miette
 
 Enable:
 
@@ -787,7 +846,7 @@ features = ["miette"]
 The miette integration maps compatible diagnostic metadata into diagprint's
 structured interoperability model.
 
-## codespan-reporting
+## 🧩 codespan-reporting
 
 Enable:
 
@@ -797,7 +856,7 @@ features = ["codespan-reporting"]
 
 Codespan diagnostics are routed through the generic interoperability layer.
 
-## Ariadne
+## 🧩 Ariadne
 
 Enable:
 
@@ -817,7 +876,7 @@ private Ariadne internals.
 Ariadne source spans are resolved into one-based source locations for
 diagprint.
 
-## annotate-snippets
+## 🧩 annotate-snippets
 
 Enable:
 
@@ -833,7 +892,7 @@ The annotate-snippets bridge:
 - converts byte spans into one-based line and column locations;
 - exposes its in-memory sources through `SourceProvider`.
 
-## Rustc Diagnostics
+## 🦀 Rustc Diagnostics
 
 `diagprint` can ingest structured rustc JSON diagnostics.
 
@@ -851,7 +910,7 @@ The compiler integration can preserve information including:
 Compiler edits require explicit trusted source-root hydration before they can
 participate in remediation.
 
-## Cargo Intelligence
+## 📦 Cargo Intelligence
 
 Cargo ingestion can track information including:
 
@@ -868,7 +927,7 @@ Cargo ingestion can track information including:
 
 Unknown Cargo messages are preserved for forward compatibility.
 
-## Diagnostic Suggestions
+## 💡 Diagnostic Suggestions
 
 Diagnostics can carry structured suggestions.
 
@@ -911,7 +970,7 @@ pub enum Applicability {
 Only guarded, machine-applicable structured edits are eligible for automatic
 application.
 
-## Fixer
+## 🔧 Fixer
 
 Validate without writing:
 
@@ -954,7 +1013,7 @@ Before mutation, diagprint validates:
 
 Stale edits are rejected instead of guessed.
 
-## FixPlan
+## 🧰 FixPlan
 
 `FixPlan` supports transaction-wide multi-file remediation.
 
@@ -970,7 +1029,7 @@ The remediation flow:
 
 Portable crash-atomic multi-file writes are **not** claimed.
 
-## Post-Fix Verification
+## ✅ Post-Fix Verification
 
 Fix plans can declare structured verification requirements after application.
 
@@ -979,7 +1038,7 @@ Verification remains declarative.
 `diagprint` does not automatically execute arbitrary shell commands as part of
 fix application or verification.
 
-## Suggested Commands
+## 💬 Suggested Commands
 
 Suggestions may contain advisory commands:
 
@@ -997,7 +1056,7 @@ let command =
 
 Suggested commands are **never executed automatically**.
 
-## Documentation Intelligence
+## 📚 Documentation Intelligence
 
 `DocumentationResolver` supports version-aware documentation resolution using
 Cargo metadata and lockfiles.
@@ -1011,7 +1070,7 @@ Supported documentation targets include:
 
 Ambiguous package versions fail closed instead of guessing a docs.rs version.
 
-## Terminal Documentation
+## 📖 Terminal Documentation
 
 Enable:
 
@@ -1048,7 +1107,7 @@ The terminal documentation viewer:
 
 The current documentation viewer uses blocking I/O.
 
-## Themes
+## 🎨 Themes
 
 Terminal presentation is customizable.
 
@@ -1092,7 +1151,7 @@ Styles support:
 `color(false)` remains authoritative and disables ANSI styling regardless of
 theme configuration.
 
-## Cybercore Integration
+## ⚡ Cybercore Integration
 
 Enable:
 
@@ -1114,7 +1173,7 @@ Named Cybercore themes are also supported.
 The integration consumes Cybercore's semantic palette rather than duplicating
 theme values inside diagprint.
 
-## Rotation
+## 🗂️ Rotation
 
 File reports support:
 
@@ -1136,7 +1195,7 @@ let policy = RotationPolicy {
 };
 ```
 
-## Compression
+## 🗜️ Compression
 
 Enable:
 
@@ -1153,7 +1212,7 @@ use diagprint::Compression;
 // Compression::Zstd
 ```
 
-## Safety Model
+## 🛡️ Safety Model
 
 `diagprint` deliberately separates diagnostic presentation from mutation.
 
@@ -1184,7 +1243,7 @@ Suggested shell commands are never automatically executed.
 Revision-aware source rendering also fails closed when source identity no longer
 matches the diagnostic.
 
-## Minimum Supported Rust Version
+## 🦀 Minimum Supported Rust Version
 
 The minimum supported Rust version is:
 
@@ -1195,7 +1254,7 @@ Rust 1.85
 CI performs an MSRV-aware fresh dependency resolution and checks all targets and
 all features on Rust 1.85.
 
-## Development
+## 🛠️ Development
 
 Install repository hooks once per clone:
 
@@ -1228,7 +1287,7 @@ forensics, and precommit jobs.
 Git's `--no-verify` remains a human emergency escape hatch; coding agents are
 instructed not to use it.
 
-## Examples
+## 🧪 Examples
 
 Core examples:
 
@@ -1236,6 +1295,23 @@ Core examples:
 cargo run --example basic
 cargo run --example error_chain
 cargo run --example intelligence
+```
+
+Remediation examples:
+
+```bash
+cargo run --example fixplan
+cargo run --example compiler_import
+cargo run --example cargo_intelligence
+cargo run --example documentation_resolution
+```
+
+Artifact and interop examples:
+
+```bash
+cargo run --example rendered_artifacts
+cargo run --example interop_custom
+cargo run --example thiserror_integration
 ```
 
 Revision-aware source examples:
@@ -1265,6 +1341,11 @@ cargo run \
 cargo run \
     --features annotate-snippets \
     --example annotate_snippets_integration
+
+cargo run --features anyhow --example anyhow_integration
+cargo run --features tracing --example tracing_integration
+cargo run --features miette --example miette_integration
+cargo run --features codespan-reporting --example codespan_integration
 ```
 
 Other optional examples:
@@ -1279,66 +1360,39 @@ cargo run \
     --example terminal_docs
 ```
 
-## v0.6
+## 🆕 What's new in 0.8
 
-### Revision-Aware Diagnostics and CI Output
+- 🕸️ **Relationship-graph forensics:** typed diagnostic relationships, separate evidence provenance, cycle-safe traversal and `diagprint graph` (text, JSON or Graphviz DOT).
+- 🧬 **Git provenance:** `diagprint blame` binds history runs to the exact commit and tree from a clean worktree.
+- 🔁 **Remediation replay:** read-only `diagprint replay` over history-bound remediation evidence.
+- 🌉 **Ecosystem Bridges:** the `diagprint-bridge` adapter SDK and the first adapter, `diagprint-error-stack`.
 
-v0.6 adds:
+0.8.1 is a metadata patch: repository links now point to `cybercore-tech`.
 
-- distinct primary and secondary label rendering;
-- virtual source caching;
-- generic source-provider handoff;
-- immutable source snapshots;
-- per-source revision tracking;
-- revision-bound source locations;
-- stale-source detection;
-- fail-closed stale-source terminal rendering;
-- captured diagnostics;
-- Ariadne structured interoperability;
-- annotate-snippets structured interoperability;
-- GitHub Actions annotations;
-- SARIF 2.1.0 rendering;
-- hardened Rust 1.85 validation across all targets and features.
+Full history: [CHANGELOG.md](CHANGELOG.md) · release notes in [`docs/releases/`](docs/releases/).
 
-## v0.5
-
-### Interoperability and Transactional Remediation
-
-v0.5 added:
-
-- Rust 2024;
-- Rust 1.85 MSRV;
-- anyhow integration;
-- typed-error metadata;
-- tracing integration;
-- rustc/Cargo structured ingestion;
-- version-aware documentation;
-- FixPlan;
-- transaction-wide multi-file remediation;
-- post-fix verification;
-- Cargo intelligence;
-- miette interoperability;
-- codespan-reporting interoperability;
-- generic dependency-free diagnostic interoperability.
-
-## Roadmap
+## 🗺️ Roadmap
 
 Potential future work includes:
 
-- asynchronous and nonblocking report output;
 - asynchronous terminal documentation retrieval;
 - richer structured diff presentation;
 - additional structured fix sources.
 
-## Repository
+## 💬 Community
 
-https://github.com/cybercore-tech/diagprint
+- 🐛 Bugs and ideas: [GitHub issues](https://github.com/cybercore-tech/diagprint/issues)
+- 💬 Chat: [Discord](https://discord.gg/vBMcK5wAx)
+- 🔒 Security reports: security@cybercoretech.net (please don't open a public issue)
+- ✉️ Everything else: dev@cybercoretech.net
 
-## License
+## 📄 License
 
 Licensed under either:
 
-- Apache License, Version 2.0
-- MIT License
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
+- MIT License ([LICENSE-MIT](LICENSE-MIT))
 
 at your option.
+
+Copyright (c) 2026 Cybercore Tech
