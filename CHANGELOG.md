@@ -6,6 +6,20 @@ The project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-10-02
+
+A metadata and documentation patch. No code or API changes.
+
+### Changed
+
+- Repository, homepage and documentation links in every published package now
+  point to `github.com/cybercore-tech/diagprint`. The 0.8.0 packages still
+  linked the archived `darkstardevx/diagprint` repository on crates.io.
+- The README badges and links point to `cybercore-tech`, and the README
+  documents the CLI installer (`install.sh`) and `cargo install diagprint`.
+- All eight workspace packages move to 0.8.1 together so the published set
+  stays version-aligned.
+
 ## [0.8.0] - 2026-09-17
 
 v0.8.0 completes the first Diagnostic Forensics, Ecosystem Bridges, and
