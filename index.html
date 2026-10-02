@@ -50,10 +50,16 @@ EPISODES
 diagprint = "0.8"
 <span class="comment"># optional: features = ["derive", "cybercore"]</span></pre></div></div></section>
 </main>
+
+<!-- Cybercore Tech contact block: one shared source for every site (cybercore-tech.github.io/kit/contact.js + data/contact.json) -->
+<section class="cc-contact-band" aria-label="Contact Cybercore Tech" style="--white:var(--ink);--pink:var(--violet);--acid:var(--green);--purple:var(--violet);width:min(1120px,calc(100% - 2.5rem));margin:4.5rem auto 0;padding:2.25rem 0 1.75rem;border-top:1px solid var(--line,#32303e)">
+  <cybercore-contact repo="diagprint" bare><a href="mailto:dev@cybercoretech.net">dev@cybercoretech.net</a></cybercore-contact>
+</section>
 <footer class="shell footer"><span>diagprint <span id="footer-version">v0.8.0</span> // MIT OR Apache-2.0</span><div class="footer-links"><a href="https://crates.io/crates/diagprint" target="_blank" rel="noopener">crates.io ↗</a><a href="https://docs.rs/diagprint" target="_blank" rel="noopener">docs.rs ↗</a><a href="https://github.com/cybercore-tech/diagprint" target="_blank" rel="noopener">GitHub ↗</a><a href="https://discord.gg/vBMcK5wAx" target="_blank" rel="noopener">Discord ↗</a><a href="https://cybercore-tech.github.io" target="_blank" rel="noopener">Cybercore ecosystem ↗</a></div></footer>
 <script>
 (function(){var nodes=[document.getElementById('version-inline'),document.getElementById('footer-version')];fetch('https://api.github.com/repos/cybercore-tech/diagprint/releases/latest',{headers:{Accept:'application/vnd.github+json'}}).then(function(r){return r.ok?r.json():null}).then(function(release){if(!release||!release.tag_name)return;var version=release.tag_name.replace(/^v/,'');nodes.forEach(function(node,index){if(node)node.textContent=index===0?'// v'+version:'v'+version})}).catch(function(){/* static fallback remains useful offline */})}());
 (function(){var button=document.getElementById('copy-cli'),command=document.getElementById('cli-install-command'),status=document.getElementById('copy-status');if(!button||!command)return;var text=command.textContent.replace(/^\$\s*/,'');function complete(message){button.textContent='copied!';button.dataset.copied='true';status.textContent=message;window.setTimeout(function(){button.textContent='copy';button.dataset.copied='false'},1800)}function fallback(){var selection=window.getSelection(),range=document.createRange();range.selectNodeContents(command);selection.removeAllRanges();selection.addRange(range);var copied=false;try{copied=document.execCommand('copy')}catch(error){copied=false}selection.removeAllRanges();if(copied)complete('CLI install command copied.');else status.textContent='Select the command manually to copy it.'}button.addEventListener('click',function(){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(function(){complete('CLI install command copied.')} ).catch(fallback)}else fallback()})}());
 </script>
+  <script type="module" src="https://cybercore-tech.github.io/kit/contact.js"></script>
 </body>
 </html>
