@@ -24,8 +24,8 @@ enabled.
 ## Installation
 
     [dependencies]
-    diagprint = "0.7"
-    diagprint-otel = "0.7"
+    diagprint = "0.8"
+    diagprint-otel = "0.8"
 
 ## Main API
 

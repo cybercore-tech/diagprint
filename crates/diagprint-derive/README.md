@@ -10,7 +10,7 @@ on `diagprint-derive` directly:
 
 ~~~toml
 [dependencies]
-diagprint = { version = "0.7", features = ["derive"] }
+diagprint = { version = "0.8", features = ["derive"] }
 ~~~
 
 Then derive `DiagnosticMetadata` through the re-exported `Diagnostic` macro:
