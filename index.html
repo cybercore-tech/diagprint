@@ -1,65 +1,409 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dp-sector-neural">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090817">
-<title>diagprint // diagnostics with a memory</title>
-<meta name="description" content="diagprint is a Rust diagnostics lifecycle framework for rendering, remediation, CI, editors, forensics, and telemetry.">
-<link rel="icon" type="image/svg+xml" href="assets/logo-span-mark.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--void:#090817;--ink:#f7f3ff;--muted:#aaa2c3;--dim:#71698a;--panel:rgba(20,14,40,.78);--line:rgba(173,138,255,.2);--red:#ff3b52;--orange:#ff762a;--violet:#a779ff;--cyan:#62e7ff;--green:#58e0b3;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:'DM Sans',ui-sans-serif,system-ui,sans-serif}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--void);font-family:var(--sans);overflow-x:hidden}
-body:before{content:'';position:fixed;z-index:-2;inset:0;background:radial-gradient(circle at 83% 4%,rgba(255,59,82,.16),transparent 30rem),radial-gradient(circle at 16% 38%,rgba(103,75,213,.13),transparent 35rem),linear-gradient(180deg,#090817,#0b0819 56%,#090817)}
-body:after{content:'';position:fixed;z-index:-1;inset:0;opacity:.25;pointer-events:none;background-image:linear-gradient(rgba(167,121,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(167,121,255,.06) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,#000,transparent 80%)}
-a{color:inherit}.skip{position:absolute;left:-9999px;top:1rem}.skip:focus{left:1rem;z-index:10;padding:.65rem .9rem;background:var(--ink);color:var(--void)}.shell{width:min(1160px,calc(100% - 2.5rem));margin:0 auto}.mono{font-family:var(--mono)}
-.topbar{display:flex;align-items:center;justify-content:space-between;min-height:76px;border-bottom:1px solid rgba(173,138,255,.13);font:.75rem var(--mono)}.brand{display:inline-flex;align-items:center;gap:.75rem;text-decoration:none;letter-spacing:.08em}.brand img{width:31px;height:31px;border-radius:8px;box-shadow:0 0 24px rgba(255,59,82,.24)}.brand strong{font-size:.88rem}.brand span{color:var(--dim)}.nav{display:flex;align-items:center;gap:1.2rem;color:var(--muted)}.nav a{text-decoration:none;transition:color .2s}.nav a:hover,.nav a:focus-visible{color:var(--ink)}.nav-cta{color:var(--ink);border:1px solid var(--line);padding:.52rem .72rem;background:rgba(20,14,40,.5)}.nav-cta:hover,.nav-cta:focus-visible{border-color:var(--red);color:var(--red)}
-.hero{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr);gap:clamp(2rem,7vw,6.4rem);align-items:center;padding:clamp(4.5rem,10vw,8.5rem) 0 5.8rem}.eyebrow{color:var(--orange);font:600 .72rem/1.4 var(--mono);letter-spacing:.11em;text-transform:uppercase}.eyebrow:before{content:'◈ ';color:var(--red)}h1,h2,h3,p{margin-top:0}h1{margin:.9rem 0 1.2rem;max-width:720px;font-size:clamp(3.2rem,7.2vw,6.65rem);line-height:.94;letter-spacing:-.07em;font-weight:700}h1 em{color:var(--red);font-style:normal;text-shadow:0 0 34px rgba(255,59,82,.32)}.hero-copy>p{max-width:580px;color:var(--muted);font-size:clamp(1.05rem,1.8vw,1.24rem);line-height:1.65}.hero-copy>p strong{color:var(--ink)}.actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:2rem 0 1.35rem}.button{display:inline-flex;align-items:center;justify-content:center;min-height:45px;gap:.55rem;padding:.75rem 1rem;border:1px solid var(--line);background:rgba(20,14,40,.66);color:var(--ink);font:600 .77rem var(--mono);text-decoration:none;transition:transform .2s,border-color .2s,background .2s}.button:hover,.button:focus-visible{transform:translateY(-2px);border-color:var(--violet);background:rgba(45,29,75,.9)}.button.primary{border-color:var(--red);background:linear-gradient(100deg,var(--red),var(--orange));color:#1c0711;box-shadow:0 0 30px rgba(255,59,82,.22)}.button.primary:hover,.button.primary:focus-visible{border-color:#ffb06a;background:linear-gradient(100deg,#ff5b68,#ff9147)}.install-line{color:var(--dim);font:.72rem var(--mono)}.install-line + .install-line{margin-top:.38rem}.install-line code{color:var(--cyan)}.copy-command{display:flex;align-items:center;gap:.7rem;max-width:100%;margin-top:.45rem;padding:.62rem .65rem .62rem .8rem;border:1px solid rgba(98,231,255,.24);background:rgba(10,8,25,.7);font:.72rem var(--mono)}.copy-command code{min-width:0;flex:1;color:var(--cyan);overflow-wrap:anywhere}.copy-button{flex:0 0 auto;border:1px solid rgba(167,121,255,.45);padding:.38rem .55rem;background:rgba(45,29,75,.7);color:var(--ink);font:600 .67rem var(--mono);cursor:pointer}.copy-button:hover,.copy-button:focus-visible{border-color:var(--orange);color:var(--orange)}.copy-button[data-copied=true]{border-color:var(--green);color:var(--green)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.terminal{position:relative;border:1px solid var(--line);background:linear-gradient(145deg,rgba(28,19,53,.95),rgba(12,9,25,.94));box-shadow:0 26px 90px rgba(0,0,0,.32),0 0 80px rgba(106,61,184,.13)}.terminal:before{content:'';position:absolute;inset:14px -14px -14px 14px;z-index:-1;border:1px solid rgba(255,59,82,.16)}.terminal-bar{display:flex;align-items:center;gap:.4rem;padding:.78rem 1rem;border-bottom:1px solid var(--line);color:var(--dim);font:.67rem var(--mono)}.dot{width:7px;height:7px;border-radius:50%;background:var(--dim)}.dot:first-child{background:var(--red);box-shadow:0 0 10px var(--red)}.dot:nth-child(2){background:var(--orange)}.dot:nth-child(3){background:var(--green)}.terminal-title{margin-left:auto}.terminal-body{padding:1.45rem 1.25rem 1.6rem;font:.73rem/1.75 var(--mono)}.prompt,.green{color:var(--green)}.muted{color:var(--dim)}.err{color:var(--red)}.warn{color:var(--orange)}.cyan{color:var(--cyan)}.white{color:var(--ink)}.indent{padding-left:1rem}.cursor{display:inline-block;width:.55em;height:1.1em;margin-left:.25rem;vertical-align:-.15em;background:var(--red);animation:blink 1.1s steps(2,start) infinite}@keyframes blink{50%{opacity:0}}
-.signal-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.signal{padding:1.1rem 1.2rem;border-right:1px solid var(--line)}.signal:last-child{border-right:0}.signal b{display:block;margin-bottom:.3rem;color:var(--ink);font:700 .76rem var(--mono)}.signal span{color:var(--dim);font-size:.78rem}
-.section{padding:7rem 0 1rem}.section-kicker{color:var(--violet);font:600 .71rem var(--mono);letter-spacing:.1em;text-transform:uppercase}h2{max-width:710px;margin:.8rem 0 1rem;font-size:clamp(2.2rem,4.5vw,4.2rem);line-height:1;letter-spacing:-.055em}.section-intro{max-width:620px;color:var(--muted);font-size:1.05rem;line-height:1.7}
-.surface-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}.surface{min-height:240px;padding:1.45rem;border:1px solid var(--line);background:linear-gradient(155deg,rgba(24,17,47,.9),rgba(14,10,29,.78));position:relative;overflow:hidden}.surface:after{content:'';position:absolute;right:-40px;bottom:-50px;width:150px;height:150px;border:1px solid rgba(255,59,82,.24);transform:rotate(45deg)}.surface:hover{border-color:rgba(255,89,102,.55)}.surface-num{color:var(--red);font:.69rem var(--mono)}.surface h3{margin:2.2rem 0 .6rem;font-size:1.12rem}.surface p{margin-bottom:1.3rem;color:var(--muted);line-height:1.55;font-size:.92rem}.surface code{color:var(--cyan);font:.71rem var(--mono)}
-.forensics{display:grid;grid-template-columns:.76fr 1.24fr;gap:1rem;align-items:stretch;margin-top:2.5rem}.forensics-copy,.casefile{border:1px solid var(--line);background:var(--panel)}.forensics-copy{padding:2rem}.forensics-copy h3{margin:0 0 .8rem;font-size:1.5rem}.forensics-copy p{color:var(--muted);line-height:1.65}.tag{display:inline-block;margin-top:1rem;color:var(--green);font:.7rem var(--mono)}.casefile{padding:1.35rem;overflow-x:auto}.casefile pre{margin:0;color:var(--muted);font:.73rem/1.8 var(--mono)}
-.install{display:grid;grid-template-columns:1fr .9fr;gap:1rem;align-items:stretch;margin-top:2.5rem}.install-copy,.code-card{border:1px solid var(--line);background:var(--panel);padding:1.6rem}.install-copy p{color:var(--muted);line-height:1.6}.code-card{display:flex;flex-direction:column;justify-content:center}.code-card .label{margin-bottom:.8rem;color:var(--dim);font:.69rem var(--mono)}.code-card pre{margin:0;color:var(--cyan);font:.86rem/1.9 var(--mono);overflow-x:auto}.comment{color:var(--dim)}
-.footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:7rem;padding:1.5rem 0 2.5rem;border-top:1px solid var(--line);color:var(--dim);font:.7rem var(--mono)}.footer a{color:var(--muted);text-decoration:none}.footer a:hover,.footer a:focus-visible{color:var(--red)}.footer-links{display:flex;flex-wrap:wrap;gap:1rem}
-@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:4rem}.terminal{max-width:620px}.surface-grid,.forensics,.install{grid-template-columns:1fr}}@media(max-width:560px){.shell{width:min(100% - 1.5rem,1160px)}.topbar{min-height:64px}.nav a:not(.nav-cta){display:none}h1{font-size:clamp(3.1rem,16vw,5rem)}.hero{padding:3.7rem 0 4.2rem}.signal-strip{grid-template-columns:repeat(2,1fr)}.signal:nth-child(2){border-right:0}.signal:nth-child(-n+2){border-bottom:1px solid var(--line)}.section{padding-top:5rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>diagprint — the Rust diagnostics lifecycle framework</title>
+  <meta name="description" content="diagprint is a Rust diagnostics lifecycle framework for structured diagnostics, rendering, remediation, CI, editors, and telemetry. Define a diagnostic once and carry it from terminal to SARIF, guarded fixes and forensic history.">
+  <meta name="theme-color" content="#0e100f">
+  <meta property="og:title" content="diagprint — make every failure legible">
+  <meta property="og:description" content="A Rust diagnostics lifecycle framework: structured diagnostics, rendering, guarded remediation, CI, editors, telemetry and forensics.">
+  <meta property="og:image" content="https://cybercore-tech.github.io/diagprint/assets/img/social-card.png">
+  <meta property="og:url" content="https://cybercore-tech.github.io/diagprint/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Share+Tech+Mono&display=swap">
+  <link rel="stylesheet" href="assets/css/site.css?v=7">
+  <script>
+    window.SITE = {
+      dataRoot: 'https://cybercore-tech.github.io/data',
+      defaultTheme: 'dp-sector-neural',
+      mashups: [
+        { id: 'dp-sector-neural', label: 'SECTOR NEURAL', base: 'dystopian-sector', accent: 'cyberdyne-neural' }
+      ]
+    };
+  </script>
+  <script src="assets/js/theme.js?v=7" defer></script>
+  <script src="assets/js/lab.js?v=7" defer></script>
+  <script src="assets/js/forensics.js?v=7" defer></script>
+  <script src="assets/js/fx.js?v=7" defer></script>
+  <script type="module" src="https://cybercore-tech.github.io/kit/contact.js"></script>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="shell topbar"><a class="brand" href="./" aria-label="diagprint home"><img src="assets/logo-span-mark.svg" alt=""><strong>diagprint</strong><span>// cybercore diagnostics</span></a><nav class="nav" aria-label="Primary navigation"><a href="#surfaces">surfaces</a><a href="#forensics">forensics</a><a class="nav-cta" href="https://github.com/cybercore-tech/diagprint" target="_blank" rel="noopener">source ↗</a></nav></header>
-<main id="main" class="shell">
-<section class="hero"><div class="hero-copy"><div class="eyebrow">diagnostic telemetry // uplink ready</div><h1>Make every failure <em>legible.</em></h1><p><strong>diagprint</strong> is the Rust diagnostics lifecycle framework for teams that need more than a red line in a terminal. Render once. Explain clearly. Track what changed.</p><div class="actions"><a class="button primary" href="https://docs.rs/diagprint" target="_blank" rel="noopener">Read the docs <span>↗</span></a><a class="button" href="https://github.com/cybercore-tech/diagprint/releases" target="_blank" rel="noopener">View releases <span>↗</span></a></div><div class="install-line"><span class="mono">$</span> cargo add diagprint <code id="version-inline">// v0.8.0</code></div><div class="copy-command" role="group" aria-label="Install the diagprint CLI"><code id="cli-install-command">$ curl -fsSL https://raw.githubusercontent.com/cybercore-tech/diagprint/main/install.sh | sh</code><button class="copy-button" id="copy-cli" type="button" aria-describedby="copy-status">copy</button><span class="sr-only" id="copy-status" role="status" aria-live="polite"></span></div></div>
-<div class="terminal" aria-label="Example diagprint diagnostic output"><div class="terminal-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="terminal-title">diagprint // live case</span></div><div class="terminal-body"><div><span class="prompt">$</span> diagprint scan . --history .diagprint/history</div><div class="muted">&nbsp;</div><div><span class="err">error</span> <span class="white">[ERROR-001]: uplink rejected</span></div><div class="muted">  --&gt; src/gateway.rs:42:17</div><div class="indent"><span class="cyan">42</span> | <span class="white">connect(node, signature)</span></div><div class="indent"><span class="cyan">&nbsp;&nbsp;</span> | <span class="err">^^^^^^^^^^^^^^^^^</span></div><div class="indent"><span class="warn">= cause:</span> authentication signature mismatch</div><div class="indent"><span class="cyan">= note:</span> case fingerprint retained</div><div class="indent"><span class="green">= help:</span> verify node identity and reconnect</div><div class="muted">&nbsp;</div><div><span class="green">✓</span> report persisted // chain verified</div><div><span class="prompt">$</span><span class="cursor" aria-hidden="true"></span></div></div></div></section>
-<section class="signal-strip" aria-label="diagprint principles"><div class="signal"><b>01 // structured</b><span>One diagnostic, many renderers.</span></div><div class="signal"><b>02 // explainable</b><span>Causes, context, and actionable help.</span></div><div class="signal"><b>03 // guarded</b><span>Remediation stays explicit and verified.</span></div><div class="signal"><b>04 // remembered</b><span>History turns incidents into evidence.</span></div></section>
-<section id="surfaces" class="section"><div class="section-kicker">// one signal, every surface</div><h2>Diagnostics that travel with the problem.</h2><p class="section-intro">Build the report once, then carry its meaning from a local terminal to CI, editor integrations, code scanning, and long-lived forensic history.</p><div class="surface-grid"><article class="surface"><div class="surface-num">[01] PRESENT</div><h3>Render for humans</h3><p>Rich terminal output, source spans, labels, notes, causes, and help that make the next action obvious.</p><code>terminal · markdown · html</code></article><article class="surface"><div class="surface-num">[02] CONNECT</div><h3>Export for systems</h3><p>Stable structured output for CI, GitHub Actions, SARIF, compilers, editors, telemetry, and custom bridges.</p><code>json · sarif · adapters</code></article><article class="surface"><div class="surface-num">[03] REMEMBER</div><h3>Investigate the trail</h3><p>Canonical fingerprints, history chains, semantic deltas, and case files that show when a failure appeared and why.</p><code>history · why · blame</code></article></div></section>
-<section id="forensics" class="section"><div class="section-kicker">// memory layer</div><h2>From noisy failure to a verified case file.</h2><div class="forensics"><div class="forensics-copy"><h3>Keep the signal.</h3><p>diagprint gives recurring diagnostics an identity. Compare runs, preserve privacy-aware evidence, and distinguish a new failure from the same failure wearing a new timestamp.</p><span class="tag">schema: diagprint.forensics.case-file/v1</span></div><div class="casefile"><pre><span class="cyan">DIAGNOSTIC CASE FILE</span>
-fingerprint: <span class="cyan">sha256:7f23a9d5c120...</span>
-status: <span class="err">active</span>   chain-verified: <span class="green">true</span>
-first-seen: run=000002  label="baseline"
-last-seen:  run=000011  label="regressed"
-history-runs: 12   observed-runs: 7   episodes: 2
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="g-hot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--pink)"/><stop offset="1" style="stop-color:var(--orange)"/></linearGradient>
+      <linearGradient id="g-cold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="120" y2="120"><stop offset="0" style="stop-color:var(--acid)"/><stop offset=".5" style="stop-color:var(--cyan)"/><stop offset="1" style="stop-color:var(--pink)"/></linearGradient>
+    </defs>
+    <!-- diagprint sigil: a fingerprint whorl whose middle ridge is a source span, pinned by carets -->
+    <symbol id="sigil" viewBox="0 0 120 120">
+      <path d="M22 6H98L114 22V98L98 114H22L6 98V22Z" fill="none" stroke="url(#g-cold)" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M2 16V2H16M104 2H118V16M118 104V118H104M16 118H2V104" fill="none" style="stroke:var(--white)" stroke-width="2" opacity=".6"/>
+      <g fill="none" stroke-linecap="round" class="ridges">
+        <circle class="rg r1" cx="60" cy="52" r="7" style="stroke:var(--cyan)" stroke-width="3" stroke-dasharray="26 18"/>
+        <circle class="rg r2" cx="60" cy="52" r="13.5" style="stroke:var(--cyan)" stroke-width="3" stroke-dasharray="34 8 14 8" opacity=".85"/>
+        <circle class="rg r3" cx="60" cy="52" r="20" style="stroke:var(--muted)" stroke-width="3" stroke-dasharray="48 10 22 12 20 14"/>
+        <circle class="rg r4" cx="60" cy="52" r="26.5" style="stroke:var(--cyan)" stroke-width="3" stroke-dasharray="62 12 30 10 40 12" opacity=".7"/>
+        <circle class="rg r5" cx="60" cy="52" r="33" style="stroke:var(--muted)" stroke-width="2.6" stroke-dasharray="80 16 36 12 50 14" opacity=".55"/>
+      </g>
+      <path class="span" d="M40.9 57.6A20 20 0 0 1 79.1 57.6" fill="none" style="stroke:var(--pink)" stroke-width="5" stroke-linecap="round"/>
+      <g class="carets" fill="none" style="stroke:var(--acid)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M38 100l5-8 5 8M50 100l5-8 5 8M62 100l5-8 5 8M74 100l5-8 5 8"/>
+      </g>
+      <rect x="57" y="49" width="6" height="6" style="fill:var(--acid)"/>
+    </symbol>
+    <!-- icons (24×24, currentColor) -->
+    <symbol id="i-term" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="m6 9 3 3-3 3M11 15h6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-json" viewBox="0 0 24 24"><path d="M8 3H6a2 2 0 0 0-2 2v4l-2 3 2 3v4a2 2 0 0 0 2 2h2M16 3h2a2 2 0 0 1 2 2v4l2 3-2 3v4a2 2 0 0 1-2 2h-2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-sarif" viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-gha" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m10 8 6 4-6 4Z" fill="currentColor"/></symbol>
+    <symbol id="i-md" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 15V9l2.5 3L11 9v6M16 9v6m-2.5-2.5L16 15l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-html" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-plain" viewBox="0 0 24 24"><path d="M4 6h16M4 10h12M4 14h16M4 18h9" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-lsp" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 8h20M6 12h7M6 16c1-1.2 2-1.2 3 0s2 1.2 3 0 2-1.2 3 0" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-otel" viewBox="0 0 24 24"><circle cx="12" cy="14" r="2.4" fill="currentColor"/><path d="M7.8 9.8a6 6 0 0 0 0 8.4M16.2 9.8a6 6 0 0 1 0 8.4M4.9 6.9a10 10 0 0 0 0 14.2M19.1 6.9a10 10 0 0 1 0 14.2M12 11.6V2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M6.5 6.5a7.5 7.5 0 0 1 12.4 5.7c0 3.5-.6 6.2-1.6 8.3M5 10.5c-.4 2.5-.2 5 .9 7.5M9 21c-1-2.5-1.3-5-1-8a4 4 0 0 1 8 .5c0 2.5-.3 5-1.2 7.5M12 13c0 3-.4 5.6-1.3 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-chain" viewBox="0 0 24 24"><rect x="2" y="8" width="9" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="8" width="9" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 12h6" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-timeline" viewBox="0 0 24 24"><path d="M2 12h20" stroke="currentColor" stroke-width="1.6"/><circle cx="5" cy="12" r="2.4" fill="currentColor"/><path d="m10 14.5 2.5-5 2.5 5Z" fill="currentColor"/><circle cx="19.5" cy="12" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="19" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.5 6h9M6.3 8.2l4.4 7.6M17.7 8.2l-4.4 7.6" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m10.5 9 4.5 3-4.5 3Z" fill="currentColor"/></symbol>
+    <symbol id="i-blame" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="19" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 7.5v9M18 10.5c0 4-6 3-11 6.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-why" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15 15 6.5 6.5M8 8.2a2.2 2.2 0 1 1 3 2c-.7.3-1 .8-1 1.5M10 14h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="10" width="6" height="5" fill="currentColor"/><path d="M10 10V8.5a2 2 0 0 1 4 0V10" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.5 3.5a5 5 0 0 0-5.8 6.6L3 15.8 8.2 21l5.7-5.7a5 5 0 0 0 6.6-5.8l-3 3-3.3-.9-.9-3.3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6M10 2v6.5L4.5 18.5A2 2 0 0 0 6.3 21.5h11.4a2 2 0 0 0 1.8-3L14 8.5V2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 15h10" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="18" r="1" fill="currentColor"/><circle cx="14" cy="17.5" r="1.3" fill="currentColor"/></symbol>
+    <symbol id="i-crate" viewBox="0 0 24 24"><path d="M12 2 21 7v10l-9 5-9-5V7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m3 7 9 5 9-5M12 12v10" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-gate" viewBox="0 0 24 24"><path d="M4 21V5l8-3 8 3v16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 11h16M9 21v-6h6v6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19.5 8.5a2.8 2.8 0 0 0-4-4L4 16Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m13.5 6.5 4 4" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 8V3H3v13h5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="2.6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="2.6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.2"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2.2"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-1.4-1.4-1.7-1.4-3 0-1 .8-1.6 1.8-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7.5" cy="12" r="1.4" fill="currentColor"/><circle cx="9.5" cy="7.5" r="1.4" fill="currentColor"/><circle cx="14.5" cy="7.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5a3.9 3.9 0 0 1 1-2.7 3.6 3.6 0 0 1 .1-2.7s.8-.3 2.8 1a9.6 9.6 0 0 1 5 0c2-1.3 2.8-1 2.8-1 .5 1.3.2 2.3.1 2.7a3.9 3.9 0 0 1 1 2.7c0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor"/></symbol>
+    <symbol id="i-discord" viewBox="0 0 24 24"><path d="M19.3 5.3A17 17 0 0 0 15 4l-.5 1.1a15.6 15.6 0 0 0-5 0L9 4a17 17 0 0 0-4.3 1.3C2 9.4 1.3 13.4 1.6 17.3A17 17 0 0 0 6.9 20l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12 12 0 0 0 10.6 0l.4.3a11 11 0 0 1-1.7.8l1.1 1.8a17 17 0 0 0 5.3-2.7c.4-4.5-.7-8.5-3.1-12ZM8.7 15c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1Zm6.6 0c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1Z" fill="currentColor"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor"/></symbol>
+  </svg>
 
-EPISODES
-  #01 start=000002 last-active=000006 resolved=000007
-  #02 start=000010 last-active=000011 resolved=<span class="err">active</span></pre></div></div></section>
-<section class="section"><div class="section-kicker">// boot sequence</div><h2>Drop it into the stack.</h2><div class="install"><div class="install-copy"><p>Start with the core crate, add the integrations you need, and keep mutation behind explicit guarded APIs. diagprint is open source, Rust-native, and designed to stay useful as your system grows.</p><a class="button" href="https://github.com/cybercore-tech/diagprint#readme" target="_blank" rel="noopener">Read the README ↗</a></div><div class="code-card"><div class="label">// Cargo.toml</div><pre><span class="comment">[dependencies]</span>
-diagprint = "0.8"
-<span class="comment"># optional: features = ["derive", "cybercore"]</span></pre></div></div></section>
-</main>
+  <div class="fx-noise" aria-hidden="true"></div>
+  <div class="fx-progress" aria-hidden="true"><i id="progress"></i></div>
 
-<!-- Cybercore Tech contact block: one shared source for every site (cybercore-tech.github.io/kit/contact.js + data/contact.json) -->
-<section class="cc-contact-band" aria-label="Contact Cybercore Tech" style="--white:var(--ink);--pink:var(--violet);--acid:var(--green);--purple:var(--violet);width:min(1120px,calc(100% - 2.5rem));margin:4.5rem auto 0;padding:2.25rem 0 1.75rem;border-top:1px solid var(--line,#32303e)">
-  <cybercore-contact repo="diagprint" bare><a href="mailto:dev@cybercoretech.net">dev@cybercoretech.net</a></cybercore-contact>
-</section>
-<footer class="shell footer"><span>diagprint <span id="footer-version">v0.8.0</span> // MIT OR Apache-2.0</span><div class="footer-links"><a href="https://crates.io/crates/diagprint" target="_blank" rel="noopener">crates.io ↗</a><a href="https://docs.rs/diagprint" target="_blank" rel="noopener">docs.rs ↗</a><a href="https://github.com/cybercore-tech/diagprint" target="_blank" rel="noopener">GitHub ↗</a><a href="https://discord.gg/vBMcK5wAx" target="_blank" rel="noopener">Discord ↗</a><a href="https://cybercore-tech.github.io" target="_blank" rel="noopener">Cybercore ecosystem ↗</a></div></footer>
-<script>
-(function(){var nodes=[document.getElementById('version-inline'),document.getElementById('footer-version')];fetch('https://api.github.com/repos/cybercore-tech/diagprint/releases/latest',{headers:{Accept:'application/vnd.github+json'}}).then(function(r){return r.ok?r.json():null}).then(function(release){if(!release||!release.tag_name)return;var version=release.tag_name.replace(/^v/,'');nodes.forEach(function(node,index){if(node)node.textContent=index===0?'// v'+version:'v'+version})}).catch(function(){/* static fallback remains useful offline */})}());
-(function(){var button=document.getElementById('copy-cli'),command=document.getElementById('cli-install-command'),status=document.getElementById('copy-status');if(!button||!command)return;var text=command.textContent.replace(/^\$\s*/,'');function complete(message){button.textContent='copied!';button.dataset.copied='true';status.textContent=message;window.setTimeout(function(){button.textContent='copy';button.dataset.copied='false'},1800)}function fallback(){var selection=window.getSelection(),range=document.createRange();range.selectNodeContents(command);selection.removeAllRanges();selection.addRange(range);var copied=false;try{copied=document.execCommand('copy')}catch(error){copied=false}selection.removeAllRanges();if(copied)complete('CLI install command copied.');else status.textContent='Select the command manually to copy it.'}button.addEventListener('click',function(){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(function(){complete('CLI install command copied.')} ).catch(fallback)}else fallback()})}());
-</script>
-  <script type="module" src="https://cybercore-tech.github.io/kit/contact.js"></script>
+  <!-- ═════════ NAV ═════════ -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#top" aria-label="diagprint home">
+      <svg class="brand-sigil"><use href="#sigil"/></svg>
+      <span class="brand-name">diagprint<small>// CYBERCORE DIAGNOSTICS</small></span>
+    </a>
+    <nav class="menu" aria-label="Primary">
+      <div class="mi">
+        <button class="mi-btn" type="button" aria-expanded="false">LIFECYCLE<svg><use href="#i-chev"/></svg></button>
+        <div class="mega">
+          <p class="mega-k">ONE DIAGNOSTIC, END TO END</p>
+          <div class="mega-grid">
+            <a href="#lifecycle" data-stage="0"><svg><use href="#i-pen"/></svg><b>Define</b><span>Typed diagnostics, labels, causes, help</span></a>
+            <a href="#surfaces"><svg><use href="#i-term"/></svg><b>Render</b><span>Terminal, JSON, Markdown, HTML, SARIF</span></a>
+            <a href="#safety"><svg><use href="#i-wrench"/></svg><b>Remediate</b><span>Guarded, transactional fixes</span></a>
+            <a href="#surfaces" data-surface="gha"><svg><use href="#i-gate"/></svg><b>Gate CI</b><span>Annotations, SARIF, baseline deltas</span></a>
+            <a href="#ecosystem"><svg><use href="#i-lsp"/></svg><b>Editors</b><span>LSP diagnostics and code actions</span></a>
+            <a href="#ecosystem"><svg><use href="#i-otel"/></svg><b>Telemetry</b><span>Privacy-aware OpenTelemetry</span></a>
+          </div>
+        </div>
+      </div>
+      <a class="mi-link hot" href="#lab"><svg><use href="#i-flask"/></svg>LAB<em>LIVE</em></a>
+      <div class="mi">
+        <button class="mi-btn" type="button" aria-expanded="false">FORENSICS<svg><use href="#i-chev"/></svg></button>
+        <div class="mega narrow">
+          <p class="mega-k">WHAT HAS THIS DIAGNOSTIC BEEN DOING?</p>
+          <div class="mega-list">
+            <a href="#forensics" data-ftab="why"><svg><use href="#i-why"/></svg><b>why</b><span>verified case file</span></a>
+            <a href="#forensics" data-ftab="timeline"><svg><use href="#i-timeline"/></svg><b>timeline</b><span>run by run</span></a>
+            <a href="#forensics" data-ftab="blame"><svg><use href="#i-blame"/></svg><b>blame</b><span>git provenance</span></a>
+            <a href="#forensics" data-ftab="graph"><svg><use href="#i-graph"/></svg><b>graph</b><span>relationship graph</span></a>
+            <a href="#forensics" data-ftab="replay"><svg><use href="#i-replay"/></svg><b>replay</b><span>remediation evidence</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="mi">
+        <button class="mi-btn" type="button" aria-expanded="false">ECOSYSTEM<svg><use href="#i-chev"/></svg></button>
+        <div class="mega narrow">
+          <p class="mega-k">WORKSPACE CRATES</p>
+          <div class="mega-list" id="megaCrates"></div>
+        </div>
+      </div>
+      <div class="mi">
+        <button class="mi-btn" type="button" aria-expanded="false">DOCS<svg><use href="#i-chev"/></svg></button>
+        <div class="mega narrow">
+          <p class="mega-k">READ THE MANUAL</p>
+          <div class="mega-list">
+            <a href="https://docs.rs/diagprint"><svg><use href="#i-crate"/></svg><b>docs.rs</b><span>API reference</span></a>
+            <a href="https://github.com/cybercore-tech/diagprint#readme"><svg><use href="#i-md"/></svg><b>README</b><span>guide and safety model</span></a>
+            <a href="https://github.com/cybercore-tech/diagprint/blob/main/CHANGELOG.md"><svg><use href="#i-timeline"/></svg><b>Changelog</b><span>every release</span></a>
+            <a href="https://github.com/cybercore-tech/diagprint/tree/main/docs"><svg><use href="#i-plain"/></svg><b>Specs</b><span>canonical, delta, receipt, forensics v1</span></a>
+            <a href="#start"><svg><use href="#i-bolt"/></svg><b>Quick start</b><span>first diagnostic in 10 lines</span></a>
+          </div>
+        </div>
+      </div>
+      <a class="mi-link mob" href="https://github.com/cybercore-tech/diagprint"><svg><use href="#i-github"/></svg>SOURCE</a>
+      <a class="mi-link mob" href="https://discord.gg/vBMcK5wAx"><svg><use href="#i-discord"/></svg>DISCORD</a>
+    </nav>
+    <div class="nav-tools">
+      <a class="ver" id="verChip" href="https://github.com/cybercore-tech/diagprint/releases" title="Latest release"><i></i><span id="verText">v0.8.0</span></a>
+      <button class="kbtn" id="openPalette" type="button" aria-label="Command palette"><svg><use href="#i-search"/></svg><span>SEARCH</span><kbd>⌘K</kbd></button>
+      <div class="theme-picker" id="picker">
+        <button class="theme-button" id="themeButton" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="themeMenu" title="Theme"><svg><use href="#i-palette"/></svg><span id="themeLabel">SECTOR NEURAL</span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <div class="theme-menu" id="themeMenu" hidden>
+          <div class="theme-search"><input id="themeFilter" type="search" placeholder="FILTER THEMES…" aria-label="Filter themes" autocomplete="off" spellcheck="false"></div>
+          <div class="theme-list" id="themeList" role="listbox" aria-label="Theme"></div>
+        </div>
+      </div>
+      <a class="ico" href="https://discord.gg/vBMcK5wAx" aria-label="Discord"><svg><use href="#i-discord"/></svg></a>
+      <a class="ico src" href="https://github.com/cybercore-tech/diagprint" aria-label="Source on GitHub"><svg><use href="#i-github"/></svg><span>SOURCE</span></a>
+      <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false"><i></i><i></i><i></i></button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ═════════ HERO ═════════ -->
+    <section class="hero">
+      <canvas class="hero-fx" id="heroFx" aria-hidden="true"></canvas>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <div class="sigil-hero" aria-hidden="true">
+            <svg><use href="#sigil"/></svg>
+            <span class="sigil-ping"></span>
+          </div>
+          <p class="eyebrow"><i class="blink"></i>RUST DIAGNOSTICS LIFECYCLE FRAMEWORK <b>//</b> <span id="eyebrowVer">v0.8</span></p>
+          <h1>Make every failure <em data-text="legible.">legible.</em></h1>
+          <p class="lede"><b>diagprint</b> defines a diagnostic once, then carries it through the terminal, compiler tooling, editors, CI, code scanning, guarded remediation, verification, telemetry and forensic history. One structure, every surface.</p>
+          <div class="cta">
+            <a class="btn hot" href="#lab"><svg><use href="#i-flask"/></svg>BREAK SOMETHING</a>
+            <a class="btn" href="https://docs.rs/diagprint"><svg><use href="#i-ext"/></svg>READ THE DOCS</a>
+          </div>
+
+          <!-- UPLINK: the install console -->
+          <div class="uplink" id="uplink">
+            <div class="up-head">
+              <span class="up-k"><i></i>UPLINK // INSTALL</span>
+              <div class="up-tabs" role="tablist" aria-label="Install method">
+                <button role="tab" aria-selected="true" data-cmd="curl">CURL</button>
+                <button role="tab" aria-selected="false" data-cmd="cargo">CARGO INSTALL</button>
+                <button role="tab" aria-selected="false" data-cmd="lib">CARGO ADD</button>
+              </div>
+            </div>
+            <button class="up-cmd" id="upCmd" type="button" aria-label="Copy install command">
+              <span class="up-prompt">❯</span><code id="upText">curl -fsSL https://raw.githubusercontent.com/cybercore-tech/diagprint/main/install.sh | sh</code>
+              <span class="up-copy"><svg class="ic-copy"><use href="#i-copy"/></svg><svg class="ic-ok"><use href="#i-check"/></svg><b id="upLabel">COPY</b></span>
+              <span class="up-beam" aria-hidden="true"></span>
+            </button>
+            <div class="up-meta" id="upMeta">
+              <span><b class="ok">◆</b> <span id="upPlatform">detecting platform…</span></span>
+              <span><b class="ok">◆</b> SHA-256 VERIFIED</span>
+              <span><b class="ok">◆</b> → ~/.local/bin</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- live case terminal -->
+        <div class="hud-term" id="liveCase">
+          <div class="ht-top">
+            <span class="ht-dots"><i></i><i></i><i></i></span>
+            <span class="ht-title">DIAGPRINT // LIVE CASE</span>
+            <span class="ht-meta"><span id="htClock">00:00:00</span> · <span class="sig"><i></i><i></i><i></i><i></i></span></span>
+          </div>
+          <div class="ht-tabs" id="htTabs"><button aria-selected="true" data-scene="0">scan</button><button data-scene="1">why</button><button data-scene="2">fix</button><span class="ht-auto">AUTO ●</span></div>
+          <pre class="ht-body" id="htBody" aria-live="off"></pre>
+          <div class="ht-foot"><span class="ok">● CHAIN VERIFIED</span><span>UTF-8</span><span>REV r42</span><span id="htMode">MODE scan</span></div>
+          <i class="hud-c tl"></i><i class="hud-c tr"></i><i class="hud-c bl"></i><i class="hud-c br"></i>
+        </div>
+      </div>
+      <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+    </section>
+
+    <!-- ═════════ LIFECYCLE ═════════ -->
+    <section class="section wrap" id="lifecycle">
+      <div class="head reveal">
+        <div><p class="kicker">01 / LIFECYCLE</p><h2>Not a red line.<br><em>A lifecycle.</em></h2></div>
+        <p>Most error libraries stop at printing. diagprint keeps the same structured diagnostic alive from the moment you define it to the day you ask why it came back.</p>
+      </div>
+      <div class="lc reveal" id="lc">
+        <svg class="lc-wire" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true"><path id="lcPath" d="M0 30H1000" /><circle r="5" class="lc-dot"><animateMotion dur="5s" repeatCount="indefinite" path="M0 30H1000"/></circle></svg>
+        <div class="lc-stages" id="lcStages"></div>
+        <div class="lc-detail" id="lcDetail"></div>
+      </div>
+    </section>
+
+    <!-- ═════════ LAB (curveball) ═════════ -->
+    <section class="section lab-section" id="lab">
+      <div class="wrap">
+        <div class="head reveal">
+          <div><p class="kicker">02 / DIAGNOSTIC LAB</p><h2>Break this config.<br><em>Watch it explain itself.</em></h2></div>
+          <p>Edit the file. A browser-side model of diagprint's pipeline scans it, renders the same diagnostics to six surfaces, and runs guarded fixes, including rejecting a stale one. The real work happens in Rust; this lab is a faithful sketch you can poke.</p>
+        </div>
+        <div class="lab reveal">
+          <div class="pane ed-pane">
+            <div class="pane-top"><span class="pane-t"><svg><use href="#i-pen"/></svg>uplink/config.toml</span><span class="rev" id="labRev">r1</span><button class="mini" id="labReset" type="button">RESET</button></div>
+            <div class="ed" id="ed">
+              <div class="ed-gutter" id="edGutter" aria-hidden="true"></div>
+              <div class="ed-stack">
+                <pre class="ed-hl" id="edHl" aria-hidden="true"></pre>
+                <textarea id="edText" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="config.toml editor"></textarea>
+              </div>
+            </div>
+            <div class="ed-status" id="edStatus"></div>
+          </div>
+          <div class="pane out-pane">
+            <div class="pane-top">
+              <div class="fmt" role="tablist" aria-label="Output surface" id="fmtTabs">
+                <button role="tab" aria-selected="true" data-fmt="terminal"><svg><use href="#i-term"/></svg>TERMINAL</button>
+                <button role="tab" aria-selected="false" data-fmt="json"><svg><use href="#i-json"/></svg>JSON</button>
+                <button role="tab" aria-selected="false" data-fmt="sarif"><svg><use href="#i-sarif"/></svg>SARIF</button>
+                <button role="tab" aria-selected="false" data-fmt="gha"><svg><use href="#i-gha"/></svg>ACTIONS</button>
+                <button role="tab" aria-selected="false" data-fmt="markdown"><svg><use href="#i-md"/></svg>MARKDOWN</button>
+                <button role="tab" aria-selected="false" data-fmt="lsp"><svg><use href="#i-lsp"/></svg>LSP</button>
+              </div>
+            </div>
+            <pre class="out" id="labOut"></pre>
+            <div class="out-foot"><span id="labCounts"></span><button class="mini" id="labCopyOut" type="button"><svg><use href="#i-copy"/></svg>COPY</button></div>
+          </div>
+          <div class="pane fix-pane">
+            <div class="pane-top"><span class="pane-t"><svg><use href="#i-wrench"/></svg>GUARDED REMEDIATION</span><span class="rev" id="fixBound">bound to r1</span></div>
+            <div class="fix-actions">
+              <button class="btn hot sm" id="labFix" type="button"><svg><use href="#i-wrench"/></svg>APPLY FIXPLAN</button>
+              <button class="btn sm" id="labStale" type="button" title="Change the buffer behind the scan's back, like an editor would"><svg><use href="#i-bolt"/></svg>MUTATE BUFFER</button>
+            </div>
+            <ol class="tx" id="labTx"></ol>
+            <p class="fix-note" id="fixNote">Only <code>machine_applicable</code> edits are applied. Everything else stays a suggestion.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ SURFACES ═════════ -->
+    <section class="section wrap" id="surfaces">
+      <div class="head reveal">
+        <div><p class="kicker">03 / SURFACES</p><h2>Render once.<br><em>Land everywhere.</em></h2></div>
+        <p>The same diagnostic data renders to humans, machines, pipelines and editors. Primary and secondary labels stay structurally distinct all the way through.</p>
+      </div>
+      <div class="surfaces" id="surfaceGrid"></div>
+    </section>
+
+    <!-- ═════════ SAFETY ═════════ -->
+    <section class="section safety-section" id="safety">
+      <div class="wrap">
+        <div class="head reveal">
+          <div><p class="kicker">04 / SAFETY MODEL</p><h2>Explain freely.<br><em>Mutate under guard.</em></h2></div>
+          <blockquote class="rule">Diagnostics may explain and propose. Mutation must be explicit, structured, validated, and reject uncertainty.</blockquote>
+        </div>
+        <div class="gates reveal" id="gates"></div>
+        <div class="safety-notes reveal">
+          <div><svg><use href="#i-x"/></svg><p><b>Suggested shell commands are never executed.</b> Verification is declarative, and replay never re-applies edits.</p></div>
+          <div><svg><use href="#i-x"/></svg><p><b>Stale edits are rejected, not guessed.</b> Revision-aware rendering fails closed when source identity no longer matches.</p></div>
+          <div><svg><use href="#i-x"/></svg><p><b>No crash-atomic claims.</b> Multi-file plans validate, keep recovery state and roll back observed failures, and say so plainly.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ FORENSICS ═════════ -->
+    <section class="section wrap" id="forensics">
+      <div class="head reveal">
+        <div><p class="kicker">05 / DIAGNOSTIC FORENSICS</p><h2>Not just what broke.<br><em>What it has been doing.</em></h2></div>
+        <p>Scan history is hash-chained. Each run seals the one before it, so a case file can prove its own evidence. The chain below is hashed live in your browser with SHA-256. Edit any run and watch verification catch it.</p>
+      </div>
+      <div class="fx reveal">
+        <div class="fx-track">
+          <div class="fx-legend"><span><b>●</b> active</span><span><b class="sev">▲</b> severity+</span><span><b class="chg">◆</b> changed</span><span><b class="res">○</b> resolved</span><span><b class="re">↻</b> reappeared</span><span><b class="abs">·</b> absent</span></div>
+          <div class="runs" id="runs" role="listbox" aria-label="History runs"></div>
+          <div class="chain" id="chain"></div>
+          <div class="chain-bar"><span id="chainStatus" class="ok">CHAIN VERIFIED</span><button class="mini" id="tamper" type="button">TAMPER WITH A RUN</button><button class="mini" id="heal" type="button">RESTORE</button></div>
+        </div>
+        <div class="hud-term fx-term">
+          <div class="ht-top"><span class="ht-dots"><i></i><i></i><i></i></span><span class="ht-title">.diagprint/history</span><span class="ht-meta" id="fxFp">7f23a9d5c120</span></div>
+          <div class="ht-tabs" id="fxTabs"><button aria-selected="true" data-tab="why">why</button><button data-tab="timeline">timeline</button><button data-tab="blame">blame</button><button data-tab="graph">graph</button><button data-tab="replay">replay</button></div>
+          <pre class="ht-body" id="fxOut"></pre>
+          <i class="hud-c tl"></i><i class="hud-c tr"></i><i class="hud-c bl"></i><i class="hud-c br"></i>
+        </div>
+      </div>
+      <div class="roadmap reveal"><span>why <b>✓</b></span><i></i><span>timeline <b>✓</b></span><i></i><span>blame <b>✓</b></span><i></i><span>causal graph <b>✓</b></span><i></i><span>replay <b>✓</b></span></div>
+    </section>
+
+    <!-- ═════════ ECOSYSTEM ═════════ -->
+    <section class="section wrap" id="ecosystem">
+      <div class="head reveal">
+        <div><p class="kicker">06 / ECOSYSTEM</p><h2>Speaks every<br><em>error dialect.</em></h2></div>
+        <p>A workspace of focused crates, plus structured bridges to the libraries your code already uses. Bridges keep relationships intact instead of flattening them into strings.</p>
+      </div>
+      <div class="crates" id="crates"></div>
+      <div class="interop reveal">
+        <span class="interop-k">INTEROP</span>
+        <span>anyhow</span><span>tracing</span><span>miette</span><span>codespan-reporting</span><span>ariadne</span><span>annotate-snippets</span><span>error-stack</span><span>rustc JSON</span><span>cargo messages</span>
+      </div>
+    </section>
+
+    <!-- ═════════ QUICK START ═════════ -->
+    <section class="section wrap" id="start">
+      <div class="head reveal">
+        <div><p class="kicker">07 / QUICK START</p><h2>Ten lines to<br><em>your first diagnostic.</em></h2></div>
+        <p>Rust 2024, MSRV 1.85. Every optional feature is off by default. Tick the ones you want and the manifest writes itself.</p>
+      </div>
+      <div class="qs reveal">
+        <div class="hud-term">
+          <div class="ht-top"><span class="ht-dots"><i></i><i></i><i></i></span><span class="ht-title">src/main.rs</span><span class="ht-meta">rust</span></div>
+          <pre class="ht-body code" data-copy><code><span class="k">use</span> diagprint::{Reporter, Severity};
+
+<span class="k">fn</span> <span class="f">main</span>() -&gt; std::io::Result&lt;()&gt; {
+    <span class="k">let</span> reporter = Reporter::builder()
+        .application(<span class="s">"myapp"</span>)
+        .min_severity(Severity::Info)
+        .build()?;
+
+    <span class="k">let</span> diagnostic = reporter
+        .error(<span class="s">"Network initialization failed"</span>)
+        .code(<span class="s">"NET-001"</span>)
+        .cause(<span class="s">"failed to open network interface"</span>)
+        .note(<span class="s">"fallback networking is unavailable"</span>)
+        .help(<span class="s">"check interface permissions and driver state"</span>);
+
+    reporter.emit(&amp;diagnostic)?;
+    Ok(())
+}</code></pre>
+          <i class="hud-c tl"></i><i class="hud-c tr"></i><i class="hud-c bl"></i><i class="hud-c br"></i>
+        </div>
+        <div class="features">
+          <p class="tk">FEATURE FLAGS <small>click to toggle</small></p>
+          <div class="flags" id="flags"></div>
+          <div class="hud-term">
+            <div class="ht-top"><span class="ht-dots"><i></i><i></i><i></i></span><span class="ht-title">Cargo.toml</span><span class="ht-meta" id="flagCount">0 features</span></div>
+            <pre class="ht-body code" id="cargoToml" data-copy><code></code></pre>
+            <i class="hud-c tl"></i><i class="hud-c tr"></i><i class="hud-c bl"></i><i class="hud-c br"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <cybercore-contact repo="diagprint" bare><p>Contact: <a href="mailto:dev@cybercoretech.net">dev@cybercoretech.net</a></p></cybercore-contact>
+      <div class="foot-row">
+        <a class="brand" href="#top"><svg class="brand-sigil"><use href="#sigil"/></svg><span class="brand-name">diagprint<small>MIT OR APACHE-2.0 · Copyright (c) 2026 Cybercore Tech</small></span></a>
+        <p class="keys"><kbd>⌘K</kbd> search <kbd>/</kbd> search <kbd>G</kbd><kbd>L</kbd> lab</p>
+        <nav class="foot-links"><a href="https://cybercore-tech.github.io/">CYBERCORE TECH</a><a href="https://cybercore-tech.github.io/cybercore/">THEME SYSTEM</a><a href="https://crates.io/crates/diagprint">CRATES.IO</a><a href="https://docs.rs/diagprint">DOCS.RS</a></nav>
+      </div>
+    </div>
+  </footer>
+
+  <!-- command palette -->
+  <div class="palette" id="palette" hidden>
+    <div class="pal-box" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="pal-in"><svg><use href="#i-search"/></svg><input id="palInput" type="text" placeholder="Jump to a section, copy a command, switch theme…" autocomplete="off" spellcheck="false"><kbd>ESC</kbd></div>
+      <div class="pal-list" id="palList" role="listbox"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
