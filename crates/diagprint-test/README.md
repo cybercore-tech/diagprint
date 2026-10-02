@@ -21,8 +21,8 @@ the structured diagnostic model rather than parsing terminal output.
 ## Installation
 
     [dev-dependencies]
-    diagprint = "0.7"
-    diagprint-test = "0.7"
+    diagprint = "0.8"
+    diagprint-test = "0.8"
 
 ## Common imports
 

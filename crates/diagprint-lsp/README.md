@@ -22,8 +22,8 @@ separate so stale edits fail closed instead of being guessed.
 ## Installation
 
     [dependencies]
-    diagprint = "0.7"
-    diagprint-lsp = "0.7"
+    diagprint = "0.8"
+    diagprint-lsp = "0.8"
 
 ## Main API
 

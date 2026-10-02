@@ -30,8 +30,8 @@ threshold. Higher-severity diagnostics are rejected rather than silently lost.
 ## Installation
 
     [dependencies]
-    diagprint = "0.7"
-    diagprint-async = "0.7"
+    diagprint = "0.8"
+    diagprint-async = "0.8"
 
 ## Main API
 

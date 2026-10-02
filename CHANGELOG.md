@@ -19,6 +19,9 @@ A metadata and documentation patch. No code or API changes.
   documents the CLI installer (`install.sh`) and `cargo install diagprint`.
 - All eight workspace packages move to 0.8.1 together so the published set
   stays version-aligned.
+- The `diagprint-derive`, `diagprint-async`, `diagprint-lsp`, `diagprint-otel`
+  and `diagprint-test` READMEs showed `"0.7"` install snippets, which never
+  resolve to 0.8. They now show `"0.8"`.
 
 ## [0.8.0] - 2026-09-17
 
